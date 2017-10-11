@@ -1,3 +1,4 @@
+# coding: latin-1
 ################################################################################
 #
 # Copyright (c) 2017 University of Oxford
@@ -126,10 +127,12 @@ if __name__ == "__main__":
     with open(timestamps_path) as timestamps_file:
         start_time = int(next(timestamps_file).split(' ')[0])
 
-    end_time = start_time + 2e7
+    end_time = start_time + 0.5e7
 
+    print 'Building PointCloud...'
     pointcloud, reflectance = build_pointcloud(args.laser_dir, args.poses_file,
                                                args.extrinsics_dir, start_time, end_time)
+    print 'PointCloud built'
 
     if reflectance is not None:
         colours = (reflectance - reflectance.min()) / (reflectance.max() - reflectance.min())
@@ -137,40 +140,23 @@ if __name__ == "__main__":
     else:
         colours = 'gray'
 
-    x = np.ravel(pointcloud[0, :])
-    y = np.ravel(pointcloud[1, :])
-    z = np.ravel(pointcloud[2, :])
-
-    xmin = x.min()
-    ymin = y.min()
-    zmin = z.min()
-    xmax = x.max()
-    ymax = y.max()
-    zmax = z.max()
-    xmid = (xmax + xmin) * 0.5
-    ymid = (ymax + ymin) * 0.5
-    zmid = (zmax + zmin) * 0.5
-
-    max_range = max(xmax - xmin, ymax - ymin, zmax - zmin)
-    x_range = [xmid - 0.5 * max_range, xmid + 0.5 * max_range]
-    y_range = [ymid - 0.5 * max_range, ymid + 0.5 * max_range]
-    z_range = [zmid - 0.5 * max_range, zmid + 0.5 * max_range]
+   
     
-app = QtGui.QApplication([])
-w = gl.GLViewWidget()
-w.opts['distance'] = 40
-#w.setBackgroundColor(200,200,200)
-w.show()
-w.setWindowTitle('Built Pointcloud')
+    app = QtGui.QApplication([])
+    w = gl.GLViewWidget()
+    w.opts['distance'] = 40
+    #w.setBackgroundColor(200,200,200)
+    w.show()
+    w.setWindowTitle('Built Pointcloud')
 
     
-pointcloud = pointcloud[0:3, : ].transpose()
-print pointcloud
-pointcloud = np.array(-pointcloud)
-sp1 = gl.GLScatterPlotItem(pos=pointcloud, size=0.1, color=[0.7,0.7,0.7,1], pxMode=True)
-sp1.translate(5,5,0)
-w.addItem(sp1)
+    pointcloud = pointcloud[0:3, : ].transpose()
+    print pointcloud
+    pointcloud = np.array(-pointcloud)
+    sp1 = gl.GLScatterPlotItem(pos=pointcloud, size=1, color=[0.7,0.7,0.7,1], pxMode=True)
+    sp1.translate(5,5,0)
+    w.addItem(sp1)
 
-if (sys.flags.interactive != 1) or not hasattr(QtCore, 'PYQT_VERSION'):
-        QtGui.QApplication.instance().exec_()
+    if (sys.flags.interactive != 1) or not hasattr(QtCore, 'PYQT_VERSION'):
+            QtGui.QApplication.instance().exec_()
     
