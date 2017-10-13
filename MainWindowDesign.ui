@@ -16,14 +16,42 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
     <item row="0" column="0">
-     <widget class="QPushButton" name="pointcloudButton">
+     <widget class="QPushButton" name="selectDataButton">
       <property name="text">
-       <string>Build and draw sample pointcloud</string>
+       <string>Select Data</string>
       </property>
      </widget>
     </item>
     <item row="1" column="0">
+     <widget class="QPushButton" name="pointcloudButton">
+      <property name="text">
+       <string>Build and draw pointcloud</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="0">
      <widget class="GLViewWidget" name="pointcloudArea"/>
+    </item>
+    <item row="1" column="1">
+     <widget class="QPushButton" name="simulationButton">
+      <property name="text">
+       <string>Real Time Simulation</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="1">
+     <widget class="QPushButton" name="settingButton">
+      <property name="text">
+       <string>View settings</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="1">
+     <widget class="QLabel" name="imageLabel">
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
     </item>
    </layout>
   </widget>

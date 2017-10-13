@@ -1,27 +1,15 @@
-# coding: latin-1
+# -*- coding: utf-8 -*-
 from PyQt4 import QtGui
-from PyQt4.QtCore import QThread, SIGNAL
+from PyQt4.QtGui import *
+from PyQt4.QtCore import *
 import pyqtgraph.opengl as gl
 import pyqtgraph as pg
 import sys
 import MainWindowDesign
-from build_pointcloud import *
+from buildPointCloudThread import buildPointcloudThread
+import numpy as np
 
-class buildPointcloudThread(QThread):
-    def __init__(self,lidar_dir, poses_file_dir, extrinsics_dir, start_time, end_time, origin_time=-1):
-        QThread.__init__(self)
-        self.lidar_dir = lidar_dir
-        self.poses_file_dir = poses_file_dir
-        self.extrinsics_dir = extrinsics_dir
-        self.start_time = start_time
-        self.end_time = end_time
-        self.origin_time = origin_time
-    def __del__(self):
-        self.wait()
 
-    def run(self):
-        pointcloud, reflectance = build_pointcloud(self.lidar_dir, self.poses_file_dir, self.extrinsics_dir, self.start_time, self.end_time,self.origin_time)
-        self.emit(SIGNAL('drawPointcloud(PyQt_PyObject)'), pointcloud)
 
 
 class Application(QtGui.QMainWindow, MainWindowDesign.Ui_MainWindow):
@@ -34,11 +22,12 @@ class Application(QtGui.QMainWindow, MainWindowDesign.Ui_MainWindow):
         self.pointcloudButton.clicked.connect(self.buildPointcloud)
 
 
+
     def buildPointcloud(self):
         # Performed when pointcloudButton has been clicked
-        self.newThread = buildPointcloudThread("/home/qahu/Documents/inżynierka/sample/lms_front",
-                                                   "/home/qahu/Documents/inżynierka/sample/gps/ins.csv",
-                                                   "/home/qahu/Documents/inżynierka/robotcar-dataset-sdk-2.0.1/extrinsics",
+        self.newThread = buildPointcloudThread("/home/ukito/Documents/inżynierka/sample/lms_front",
+                                                   "/home/ukito/Documents/inżynierka/sample/gps/ins.csv",
+                                                   "/home/ukito/Documents/inżynierka/robotcar-dataset-sdk-2.0.1/extrinsics",
                                                    1418381798086398, 1418381817118734)
         self.connect(self.newThread, SIGNAL("drawPointcloud(PyQt_PyObject)"), self.drawPointcloud)
         self.newThread.start()
@@ -58,6 +47,8 @@ class Application(QtGui.QMainWindow, MainWindowDesign.Ui_MainWindow):
 
         self.pointcloudButton.setEnabled(True)
         self.pointcloudButton.setText("Build and draw sample pointcloud")
+
+
 
 
 def main():
