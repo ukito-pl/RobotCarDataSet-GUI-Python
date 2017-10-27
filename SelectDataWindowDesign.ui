@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>830</width>
-    <height>420</height>
+    <height>478</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -39,7 +39,7 @@
        <property name="geometry">
         <rect>
          <x>580</x>
-         <y>320</y>
+         <y>360</y>
          <width>181</width>
          <height>31</height>
         </rect>
@@ -57,7 +57,7 @@
         <bool>false</bool>
        </property>
       </widget>
-      <widget class="QToolButton" name="toolButton">
+      <widget class="QToolButton" name="browseButton1">
        <property name="geometry">
         <rect>
          <x>740</x>
@@ -125,21 +125,21 @@
         <string>Choose Camera Data:</string>
        </property>
       </widget>
-      <widget class="QLineEdit" name="startTime">
+      <widget class="QLineEdit" name="startTimeF">
        <property name="geometry">
         <rect>
-         <x>110</x>
-         <y>280</y>
+         <x>140</x>
+         <y>320</y>
          <width>181</width>
          <height>27</height>
         </rect>
        </property>
       </widget>
-      <widget class="QLineEdit" name="endTime">
+      <widget class="QLineEdit" name="endTimeF">
        <property name="geometry">
         <rect>
-         <x>110</x>
-         <y>320</y>
+         <x>140</x>
+         <y>360</y>
          <width>181</width>
          <height>27</height>
         </rect>
@@ -149,29 +149,29 @@
        <property name="geometry">
         <rect>
          <x>30</x>
-         <y>280</y>
-         <width>91</width>
-         <height>17</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Start time:</string>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_5">
-       <property name="geometry">
-        <rect>
-         <x>30</x>
          <y>320</y>
          <width>91</width>
          <height>17</height>
         </rect>
        </property>
        <property name="text">
-        <string>End time:</string>
+        <string>Start time [s]:</string>
        </property>
       </widget>
-      <widget class="QComboBox" name="chosseLidar">
+      <widget class="QLabel" name="label_5">
+       <property name="geometry">
+        <rect>
+         <x>30</x>
+         <y>360</y>
+         <width>91</width>
+         <height>17</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>End time [s]:</string>
+       </property>
+      </widget>
+      <widget class="QComboBox" name="chooseLidar">
        <property name="geometry">
         <rect>
          <x>200</x>
@@ -292,7 +292,7 @@
         </rect>
        </property>
       </widget>
-      <widget class="QToolButton" name="toolButton_2">
+      <widget class="QToolButton" name="browseButton2">
        <property name="geometry">
         <rect>
          <x>740</x>
@@ -311,7 +311,7 @@
         <enum>Qt::NoArrow</enum>
        </property>
       </widget>
-      <widget class="QToolButton" name="toolButton_3">
+      <widget class="QToolButton" name="browseButton3">
        <property name="geometry">
         <rect>
          <x>740</x>
@@ -328,6 +328,44 @@
        </property>
        <property name="arrowType">
         <enum>Qt::NoArrow</enum>
+       </property>
+      </widget>
+      <widget class="QComboBox" name="choosePoseF">
+       <property name="geometry">
+        <rect>
+         <x>200</x>
+         <y>260</y>
+         <width>131</width>
+         <height>27</height>
+        </rect>
+       </property>
+       <item>
+        <property name="text">
+         <string/>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>ins.csv</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>vo.csv</string>
+        </property>
+       </item>
+      </widget>
+      <widget class="QLabel" name="label_8">
+       <property name="geometry">
+        <rect>
+         <x>30</x>
+         <y>260</y>
+         <width>151</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Choose Pose File:</string>
        </property>
       </widget>
      </widget>
@@ -357,113 +395,33 @@
  <connections>
   <connection>
    <sender>buttonBox</sender>
-   <signal>rejected()</signal>
-   <receiver>Dialog</receiver>
-   <slot>reject()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>664</x>
-     <y>340</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>641</x>
-     <y>368</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>buttonBox</sender>
    <signal>accepted()</signal>
    <receiver>Dialog</receiver>
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>754</x>
-     <y>340</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>749</x>
-     <y>368</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>buttonBox</sender>
-   <signal>rejected()</signal>
-   <receiver>chooseDataFolder</receiver>
-   <slot>clear()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>641</x>
-     <y>340</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>283</x>
-     <y>134</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>buttonBox</sender>
-   <signal>rejected()</signal>
-   <receiver>chosseLidar</receiver>
-   <slot>clear()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>706</x>
-     <y>318</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>335</x>
-     <y>169</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>buttonBox</sender>
-   <signal>rejected()</signal>
-   <receiver>chooseCamera</receiver>
-   <slot>clear()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>642</x>
-     <y>314</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>341</x>
-     <y>208</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>buttonBox</sender>
-   <signal>rejected()</signal>
-   <receiver>startTime</receiver>
-   <slot>clear()</slot>
-   <hints>
-    <hint type="sourcelabel">
      <x>601</x>
-     <y>310</y>
+     <y>420</y>
     </hint>
     <hint type="destinationlabel">
-     <x>215</x>
-     <y>258</y>
+     <x>595</x>
+     <y>526</y>
     </hint>
    </hints>
   </connection>
   <connection>
    <sender>buttonBox</sender>
    <signal>rejected()</signal>
-   <receiver>endTime</receiver>
-   <slot>clear()</slot>
+   <receiver>Dialog</receiver>
+   <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>625</x>
-     <y>310</y>
+     <x>724</x>
+     <y>420</y>
     </hint>
     <hint type="destinationlabel">
-     <x>198</x>
-     <y>298</y>
+     <x>720</x>
+     <y>519</y>
     </hint>
    </hints>
   </connection>
