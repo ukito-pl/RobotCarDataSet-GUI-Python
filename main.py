@@ -7,10 +7,9 @@ import pyqtgraph as pg
 import sys
 import MainWindowDesign
 import SelectDataWindowDesign
-from buildPointCloudThread import buildPointcloudThread
+from buildPointCloudThread import *
 import numpy as np
 from Tkinter import *
-
 
 
 class SelectDataWindow(QtGui.QDialog, SelectDataWindowDesign.Ui_Dialog):
@@ -21,55 +20,53 @@ class SelectDataWindow(QtGui.QDialog, SelectDataWindowDesign.Ui_Dialog):
         self.setupUi(self)  # This is defined in MainWindowDesign.py file automatically
                             # It sets up layout and widgets that are defined
         try:
-            self.readDialog1()
+            self.read_dialog1()
         except:
             pass
 
         self.browseButton1.clicked.connect(self.browse1)
         self.browseButton2.clicked.connect(self.browse2)
         self.browseButton3.clicked.connect(self.browse3)
-        self.buttonBox.accepted.connect(self.saveDialog1)
+        self.buttonBox.accepted.connect(self.save_dialog1)
 
-    def saveDialog1(self):
-        global dirDataF, dirExtrF, dirModelsF, dirIns, dirLidar, dirCamera, startTime, endTime
-        dirDataF = self.chooseDataFolder.text()
-        dirExtrF = self.chooseExtrFolder.text()
-        dirModelsF = self.chooseModelsFolder.text()
-        startTime = self.startTimeF.text()
-        endTime = self.endTimeF.text()
+    def save_dialog1(self):
+        global dir_data_f, dir_extr_f, dir_models_f, dir_ins, dir_lidar, dir_camera, start_time, end_time
+        dir_data_f = self.chooseDataFolder.text()
+        dir_extr_f = self.chooseExtrFolder.text()
+        dir_models_f = self.chooseModelsFolder.text()
+        start_time = self.startTimeF.text()
+        end_time = self.endTimeF.text()
 
-        dirDataF = dirDataF.replace('\r', "").replace('\n', "").replace('file://', "")
-        dirExtrF = dirExtrF.replace('\r', "").replace('\n', "").replace('file://', "")
-        dirModelsF = dirModelsF.replace('\r', "").replace('\n', "").replace('file://', "")
-        startTime = startTime.replace('\r', "").replace('\n', "")
-        endTime = endTime.replace('\r', "").replace('\n', "")
+        dir_data_f = dir_data_f.replace('\r', "").replace('\n', "").replace('file://', "")
+        dir_extr_f = dir_extr_f.replace('\r', "").replace('\n', "").replace('file://', "")
+        dir_models_f = dir_models_f.replace('\r', "").replace('\n', "").replace('file://', "")
+        start_time = start_time.replace('\r', "").replace('\n', "")
+        end_time = end_time.replace('\r', "").replace('\n', "")
 
-        dirLidar = dirDataF + "/" + self.chooseLidar.currentText()
-        dirCamera = dirDataF + "/" + self.chooseCamera.currentText()
+        dir_lidar = dir_data_f + "/" + self.chooseLidar.currentText()
+        dir_camera = dir_data_f + "/" + self.chooseCamera.currentText()
         if self.choosePoseF.currentIndex() == 1:
-            dirIns = dirDataF + "/gps/ins.csv"
+            dir_ins = dir_data_f + "/gps/ins.csv"
         else:
-            dirIns = dirDataF + "/vo/vo.csv"
+            dir_ins = dir_data_f + "/vo/vo.csv"
 
         f = open('defaultDir.txt', 'w')
-        lines = [dirDataF, "\n", dirExtrF, "\n", dirModelsF, "\n", str(self.chooseLidar.currentIndex()), "\n",
-                 str(self.chooseCamera.currentIndex()), "\n", str(self.choosePoseF.currentIndex()), "\n", startTime, "\n", endTime]
+        lines = [dir_data_f, "\n", dir_extr_f, "\n", dir_models_f, "\n", str(self.chooseLidar.currentIndex()), "\n",
+                 str(self.chooseCamera.currentIndex()), "\n", str(self.choosePoseF.currentIndex()), "\n", start_time, "\n", end_time]
         f.writelines(lines)
         f.close()
-        self.countTime()
+        self.count_time()
 
-
-    def countTime(self):
-        global realEndTime, realStartTime
-        path = dirLidar + '.timestamps'
+    def count_time(self):
+        global real_end_time, real_start_time
+        path = dir_lidar + '.timestamps'
         f = open(path, 'r')
         x = f.readline()
-        realStartTime = int(x.split()[0]) + int(startTime)*1000  # [0]index elementu który ma zostać po splicie
+        real_start_time = int(x.split()[0]) + int(start_time) * 1000  # [0]index elementu który ma zostać po splicie
         f.close()
-        realEndTime = int(realStartTime) + int(endTime)*1000  # 1418381798086398, 1418381817118734
+        real_end_time = int(real_start_time) + int(end_time) * 1000  # 1418381798086398, 1418381817118734
 
-
-    def readDialog1(self):
+    def read_dialog1(self):
         f = open('defaultDir.txt', 'r')
         self.chooseDataFolder.setText(f.readline())
         self.chooseExtrFolder.setText(f.readline())
@@ -80,7 +77,6 @@ class SelectDataWindow(QtGui.QDialog, SelectDataWindowDesign.Ui_Dialog):
         self.startTimeF.setText(f.readline())
         self.endTimeF.setText(f.readline())
         f.close()
-
 
     def browse1(self):
         from tkFileDialog import askdirectory
@@ -101,8 +97,6 @@ class SelectDataWindow(QtGui.QDialog, SelectDataWindowDesign.Ui_Dialog):
         self.chooseModelsFolder.setText(directory)
 
 
-
-
 class Application(QtGui.QMainWindow, MainWindowDesign.Ui_MainWindow):
     def __init__(self):
         # Using super allows us to
@@ -110,41 +104,50 @@ class Application(QtGui.QMainWindow, MainWindowDesign.Ui_MainWindow):
         super(self.__class__, self).__init__()
         self.setupUi(self)  # This is defined in MainWindowDesign.py file automatically
                             # It sets up layout and widgets that are defined
-        self.pointcloudButton.clicked.connect(self.buildPointcloud)
-        self.selectDataButton.clicked.connect(self.openSelectData)
+        self.pointcloudButton.clicked.connect(self.build_pointcloud)
+        self.selectDataButton.clicked.connect(self.open_select_data)
         #self.settingButton.clicked.connect(self.drawme)            do testów czegoś
-        #self.simulationButton.clicked.connect(self.trawme)         do testów czegoś
+        self.simulationButton.clicked.connect(self.build_pointcloud_live)
 
-
-    def openSelectData(self):
+    def open_select_data(self):
         self.dialog = SelectDataWindow()
         self.dialog.show()
 
-
-    def buildPointcloud(self):
-        self.newThread = buildPointcloudThread(    str(dirLidar),
-                                                   str(dirIns),
-                                                   str(dirExtrF),
-                                                   realStartTime, realEndTime)
-        self.connect(self.newThread, SIGNAL("drawPointcloud(PyQt_PyObject)"), self.drawPointcloud)
-        self.newThread.start()
+    def build_pointcloud(self):
+        self.new_thread = BuildPointcloudThread(    str(dir_lidar),
+                                                   str(dir_ins),
+                                                   str(dir_extr_f),
+                                                   real_start_time, real_end_time)
+        self.connect(self.new_thread, SIGNAL("drawPointcloud(PyQt_PyObject)"), self.draw_pointcloud)
+        self.new_thread.start()
         self.pointcloudButton.setEnabled(False)
         self.pointcloudButton.setText("Building pointcloud...")
 
-
-    def drawPointcloud(self,pointcloud):
+    def draw_pointcloud(self, pointcloud):
         pointcloud = pointcloud[0:3, :].transpose()
         print pointcloud
         pointcloud = np.array(-pointcloud)
 
-        self.plotItem = gl.GLScatterPlotItem(pos=pointcloud, size=1, color=[0.7, 0.7, 0.7, 1], pxMode=True)
-        self.plotItem.translate(5, 5, 0)
-        if self.pointcloudArea.items.__len__() == 0:
-            self.pointcloudArea.addItem(self.plotItem)
+        plot_item = gl.GLScatterPlotItem(pos=pointcloud, size=1, color=[0.7, 0.7, 0.7, 1], pxMode=True)
+        plot_item.translate(5, 5, 0)
+        #clear pointcloud area
+        if self.pointcloudArea.items.__len__() > 0:
+            for i in range(0,self.pointcloudArea.items.__len__()):
+                self.pointcloudArea.items.__delitem__(i)
+
+        self.pointcloudArea.addItem(plot_item)
 
         self.pointcloudButton.setEnabled(True)
         self.pointcloudButton.setText("Build and draw sample pointcloud")
 
+    def build_pointcloud_live(self):
+        #Nie działa
+        self.new_thread2 = BuildPointcloudThreadLive(str(dir_lidar),
+                                               str(dir_ins),
+                                               str(dir_extr_f),
+                                               real_start_time, real_end_time)
+        #self.connect(self.newThread2, SIGNAL("drawPointcloud(PyQt_PyObject)"), self.drawPointcloud)
+        self.new_thread2.start()
 
 
 def main():

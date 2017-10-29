@@ -1,8 +1,8 @@
-/home/qahu/Documents/inz/sample
-/home/qahu/Documents/inz/robotcar-dataset-sdk-2.0.1/extrinsics
-/home/qahu/Documents/inz/robotcar-dataset-sdk-2.0.1/models
+/home/ukito/Documents/Robotcar_dataset_data/2014-05-14-13-59-05
+/home/ukito/Documents/inzynierka/robotcar-dataset-sdk-2.0.1/extrinsics
+/home/ukito/Documents/inzynierka/robotcar-dataset-sdk-2.0.1/models
 1
 1
 1
 0
-5000
+2000
