@@ -25,7 +25,7 @@ except AttributeError:
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName(_fromUtf8("MainWindow"))
-        MainWindow.resize(738, 551)
+        MainWindow.resize(870, 551)
         self.centralwidget = QtGui.QWidget(MainWindow)
         self.centralwidget.setObjectName(_fromUtf8("centralwidget"))
         self.gridLayout = QtGui.QGridLayout(self.centralwidget)
@@ -45,13 +45,15 @@ class Ui_MainWindow(object):
         self.settingButton = QtGui.QPushButton(self.centralwidget)
         self.settingButton.setObjectName(_fromUtf8("settingButton"))
         self.gridLayout.addWidget(self.settingButton, 0, 1, 1, 1)
-        self.imageLabel = QtGui.QLabel(self.centralwidget)
-        self.imageLabel.setText(_fromUtf8(""))
-        self.imageLabel.setObjectName(_fromUtf8("imageLabel"))
-        self.gridLayout.addWidget(self.imageLabel, 2, 1, 1, 1)
+        self.widget = QtGui.QWidget(self.centralwidget)
+        self.widget.setObjectName(_fromUtf8("widget"))
+        self.pointcloudArea_2 = GLViewWidget(self.widget)
+        self.pointcloudArea_2.setGeometry(QtCore.QRect(0, 0, 685, 440))
+        self.pointcloudArea_2.setObjectName(_fromUtf8("pointcloudArea_2"))
+        self.gridLayout.addWidget(self.widget, 2, 1, 1, 1)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 738, 25))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 870, 25))
         self.menubar.setObjectName(_fromUtf8("menubar"))
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QtGui.QStatusBar(MainWindow)
@@ -73,3 +75,13 @@ class Ui_MainWindow(object):
         self.toolBar.setWindowTitle(_translate("MainWindow", "toolBar", None))
 
 from pyqtgraph.opengl import GLViewWidget
+
+if __name__ == "__main__":
+    import sys
+    app = QtGui.QApplication(sys.argv)
+    MainWindow = QtGui.QMainWindow()
+    ui = Ui_MainWindow()
+    ui.setupUi(MainWindow)
+    MainWindow.show()
+    sys.exit(app.exec_())
+

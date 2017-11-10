@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>738</width>
+    <width>870</width>
     <height>551</height>
    </rect>
   </property>
@@ -47,10 +47,17 @@
      </widget>
     </item>
     <item row="2" column="1">
-     <widget class="QLabel" name="imageLabel">
-      <property name="text">
-       <string/>
-      </property>
+     <widget class="QWidget" name="widget" native="true">
+      <widget class="GLViewWidget" name="pointcloudArea_2">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>685</width>
+         <height>440</height>
+        </rect>
+       </property>
+      </widget>
      </widget>
     </item>
    </layout>
@@ -60,7 +67,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>738</width>
+     <width>870</width>
      <height>25</height>
     </rect>
    </property>

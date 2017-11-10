@@ -1,7 +1,7 @@
 from PyQt4.QtCore import QThread, SIGNAL
 from build_pointcloud import *
 import csv
-import pydevd
+#import pydevd
 
 class BuildPointcloudThread(QThread):
     def __init__(self,lidar_dir, poses_file_dir, extrinsics_dir, start_time, end_time, origin_time=-1):

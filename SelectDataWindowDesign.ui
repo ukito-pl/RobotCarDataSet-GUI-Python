@@ -368,6 +368,16 @@
         <string>Choose Pose File:</string>
        </property>
       </widget>
+      <widget class="QLineEdit" name="chooseLidarDataFile">
+       <property name="geometry">
+        <rect>
+         <x>530</x>
+         <y>160</y>
+         <width>191</width>
+         <height>27</height>
+        </rect>
+       </property>
+      </widget>
      </widget>
      <widget class="QWidget" name="tab_2">
       <attribute name="title">

@@ -133,9 +133,26 @@ def so3_to_quaternion(so3):
         # w is non-real
         w = 0
 
-    x = sqrt(1 + R_xx - R_yy - R_zz) / 2
-    y = sqrt(1 + R_yy - R_xx - R_zz) / 2
-    z = sqrt(1 + R_zz - R_yy - R_xx) / 2
+
+    i = 0
+    try:
+        x = sqrt(1 + R_xx - R_yy - R_zz) / 2
+    except:
+        i=i+1
+        x=0
+    try:
+        y = sqrt(1 + R_yy - R_xx - R_zz) / 2
+    except:
+        i=i+1
+        y = 0
+    try:
+        z = sqrt(1 + R_zz - R_yy - R_xx) / 2
+    except:
+        i = i + 1
+        z = 0
+    if i != 0:
+        print i
+
 
     max_index = max(range(4), key=[w, x, y, z].__getitem__)
 

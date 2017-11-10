@@ -19,7 +19,7 @@ import numpy as np
 from transform import build_se3_transform
 
 from interpolate_poses import interpolate_vo_poses, interpolate_ins_poses
-import pydevd
+#import pydevd
 
 
 def build_pointcloud(lidar_dir, poses_file, extrinsics_dir, start_time, end_time, origin_time=-1):
@@ -80,7 +80,7 @@ def build_pointcloud(lidar_dir, poses_file, extrinsics_dir, start_time, end_time
         reflectance = None
     else:
         reflectance = np.empty((0))
-
+    """
     for i in range(0, len(poses)):
         scan_path = os.path.join(lidar_dir, str(timestamps[i]) + '.bin')
         if not os.path.isfile(scan_path):
@@ -105,7 +105,42 @@ def build_pointcloud(lidar_dir, poses_file, extrinsics_dir, start_time, end_time
         raise IOError("Could not find scan files for given time range in directory " + lidar_dir)
 
     return pointcloud, reflectance
+    """
 
+    i = 0
+    lidar_data_file = open(lidar_dir + '/daneLidar.csv', 'r')
+    for line in lidar_data_file:
+        dane_pointcloud = []
+        j = -45
+        for x in line.split(','):
+            s = np.pi / 180 * j
+            a = float(x) * np.sin(s)
+            b = float(x) * np.cos(s)
+            j = j + 1
+            one_point = [a] + [b] + [100]
+            dane_pointcloud.append(one_point)
+        dane_pointcloud = np.array(dane_pointcloud)
+        scan = dane_pointcloud.transpose()
+
+        if lidar != 'ldmrs':
+            # LMS scans are tuples of (x, y, reflectance)
+            reflectance = np.concatenate((reflectance, np.ravel(scan[2, :])))
+            scan[2, :] = np.zeros((1, scan.shape[1]))
+
+        scan = np.dot(np.dot(poses[i], G_posesource_laser), np.vstack([scan, np.ones((1, scan.shape[1]))]))
+        pointcloud = np.hstack([pointcloud, scan])
+        i = i + 1
+        if i == (len(poses)):
+            break
+
+    print i
+    pointcloud = pointcloud[:, 1:]
+    if pointcloud.shape[1] == 0:
+        raise IOError("Could not find scan files for given time range in directory " + lidar_dir)
+
+    lidar_data_file.close()
+
+    return pointcloud, reflectance
 
 
 if __name__ == "__main__":
