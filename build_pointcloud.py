@@ -16,6 +16,7 @@
 import os
 import re
 import numpy as np
+import csv
 from transform import build_se3_transform
 
 from interpolate_poses import interpolate_vo_poses, interpolate_ins_poses
@@ -107,8 +108,23 @@ def build_pointcloud(lidar_dir, poses_file, extrinsics_dir, start_time, end_time
     return pointcloud, reflectance
     """
 
+    dane_lidar = []
+    lidar_data_file = open(lidar_dir + '/dane_z_lidaru.csv', 'r')
+    for line in lidar_data_file:
+        try:
+            one_scan = [float(x) for x in line.split(',')[11:282]]
+            dane_lidar.append(one_scan)
+        except:
+            pass
+    lidar_data_file.close()
+
+    f = open(lidar_dir + '/dane_odleglosci_lidar.csv', 'w')
+    f_csv = csv.writer(f)
+    f_csv.writerows(dane_lidar)
+    f.close()
+
     i = 0
-    lidar_data_file = open(lidar_dir + '/daneLidar.csv', 'r')
+    lidar_data_file = open(lidar_dir + '/dane_odleglosci_lidar.csv', 'r')
     for line in lidar_data_file:
         dane_pointcloud = []
         j = -45
@@ -133,7 +149,6 @@ def build_pointcloud(lidar_dir, poses_file, extrinsics_dir, start_time, end_time
         if i == (len(poses)):
             break
 
-    print i
     pointcloud = pointcloud[:, 1:]
     if pointcloud.shape[1] == 0:
         raise IOError("Could not find scan files for given time range in directory " + lidar_dir)

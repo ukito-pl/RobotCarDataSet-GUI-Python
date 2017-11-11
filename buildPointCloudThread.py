@@ -68,11 +68,9 @@ class BuildPointcloudThreadLive(QThread):
                     pose_timestamps.append(timestamp)
 
                     xyzrpy.append([float(v) for v in row[5:8]] + [float(v) for v in row[-3:]])
-                    print xyzrpy
 
                     if timestamp >= upper_timestamp:
                         break
-
 
         else:
             # sensor is VO, which is located at the main vehicle frame
