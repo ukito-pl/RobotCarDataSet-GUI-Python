@@ -4,7 +4,7 @@ import csv
 #import pydevd
 
 class BuildPointcloudThread(QThread):
-    def __init__(self,lidar_dir, poses_file_dir, extrinsics_dir, start_time, end_time, origin_time=-1):
+    def __init__(self,lidar_dir, poses_file_dir, extrinsics_dir, start_time, end_time, origin_time=-1, extr_pose=0, pose_kind=3):
         QThread.__init__(self)
         self.lidar_dir = lidar_dir
         self.poses_file_dir = poses_file_dir
@@ -12,11 +12,13 @@ class BuildPointcloudThread(QThread):
         self.start_time = start_time
         self.end_time = end_time
         self.origin_time = origin_time
+        self.extr_pose = extr_pose
+        self.pose_kind = pose_kind
     def __del__(self):
         self.wait()
 
     def run(self):
-        pointcloud, reflectance = build_pointcloud(self.lidar_dir, self.poses_file_dir, self.extrinsics_dir, self.start_time, self.end_time,self.origin_time)
+        pointcloud, reflectance = build_pointcloud(self.lidar_dir, self.poses_file_dir, self.extrinsics_dir, self.start_time, self.end_time,self.origin_time,self.extr_pose, self.pose_kind)
         self.emit(SIGNAL('drawPointcloud(PyQt_PyObject)'), pointcloud)
 
 

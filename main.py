@@ -7,6 +7,7 @@ import pyqtgraph as pg
 import sys
 import MainWindowDesign
 import SelectDataWindowDesign
+import ViewSettingWindowDesign
 from buildPointCloudThread import *
 import numpy as np
 from Tkinter import *
@@ -24,17 +25,37 @@ class SelectDataWindow(QtGui.QDialog, SelectDataWindowDesign.Ui_Dialog):
         self.setupUi(self)  # This is defined in MainWindowDesign.py file automatically
                             # It sets up layout and widgets that are defined
         try:
-            self.read_dialog1()
+            p=0
         except:
             pass
-
+        self.read_dialog1()
         self.browseButton1.clicked.connect(self.browse1)
         self.browseButton2.clicked.connect(self.browse2)
         self.browseButton3.clicked.connect(self.browse3)
-        self.buttonBox.accepted.connect(self.save_dialog1)
+        self.browseButton4.clicked.connect(self.browse4)
+        self.browseButton5.clicked.connect(self.browse5)
+        self.browseButton6.clicked.connect(self.browse6)
+        self.browseButton7.clicked.connect(self.browse7)
+        self.buttonBoxDataSet.accepted.connect(self.wersja_sdk)
+        self.buttonBoxCustom.accepted.connect(self.wersja_custom)
 
+
+    def wersja_sdk(self):
+        global sdk
+        sdk = True
+        self.save_dialog1()
+
+    def wersja_custom(self):
+        global sdk
+        sdk = False
+        self.save_dialog1()
+
+    # Oczyszczanie i zapisywanie wszystkich danych do z tzw. "formularzy" do pliku "defaultDir.txt"
     def save_dialog1(self):
         global dir_data_f, dir_extr_f, dir_models_f, dir_lidar_data, dir_ins, dir_lidar, dir_camera, start_time, end_time
+        global dir_lidar_data_custom, dir_lidar_extr, dir_lidar_synch, dir_pose_data, dir_pose_extr, pose_kind
+        global clear_h, dir_pose_synch, start_time_custom, end_time_custom
+
         dir_data_f = self.chooseDataFolder.text()
         dir_extr_f = self.chooseExtrFolder.text()
         dir_models_f = self.chooseModelsFolder.text()
@@ -42,12 +63,30 @@ class SelectDataWindow(QtGui.QDialog, SelectDataWindowDesign.Ui_Dialog):
         start_time = self.startTimeF.text()
         end_time = self.endTimeF.text()
 
+        dir_lidar_data_custom = self.chooseLidarData.text()
+        dir_lidar_extr = self.chooseLidarExtr.text()
+        dir_lidar_synch = self.synchLidarTime.text()
+        dir_pose_data = self.choosePoseData.text()
+        dir_pose_extr = self.choosePoseExtr.text()
+        dir_pose_synch = self.synchPoseTime.text()
+        start_time_custom = self.startTimeCustom.text()
+        end_time_custom = self.endTimeCustom.text()
+
         dir_data_f = dir_data_f.replace('\r', "").replace('\n', "").replace('file://', "")
         dir_extr_f = dir_extr_f.replace('\r', "").replace('\n', "").replace('file://', "")
         dir_models_f = dir_models_f.replace('\r', "").replace('\n', "").replace('file://', "")
         dir_lidar_data = dir_lidar_data.replace('\r', "").replace('\n', "").replace('file://', "")
+        dir_lidar_data_custom = dir_lidar_data_custom.replace('\r', "").replace('\n', "").replace('file://', "")
+        dir_lidar_extr = dir_lidar_extr.replace('\r', "").replace('\n', "").replace('file://', "")
+        dir_pose_data = dir_pose_data.replace('\r', "").replace('\n', "").replace('file://', "")
+        dir_pose_extr = dir_pose_extr.replace('\r', "").replace('\n', "").replace('file://', "")
         start_time = start_time.replace('\r', "").replace('\n', "")
         end_time = end_time.replace('\r', "").replace('\n', "")
+        dir_lidar_synch = dir_lidar_synch.replace('\r', "").replace('\n', "")
+        dir_pose_synch = dir_pose_synch.replace('\r', "").replace('\n', "")
+        start_time_custom = start_time_custom.replace('\r', "").replace('\n', "")
+        end_time_custom = end_time_custom.replace('\r', "").replace('\n', "")
+
 
         dir_lidar = dir_data_f + "/" + self.chooseLidar.currentText()
         dir_camera = dir_data_f + "/" + self.chooseCamera.currentText()
@@ -55,15 +94,22 @@ class SelectDataWindow(QtGui.QDialog, SelectDataWindowDesign.Ui_Dialog):
             dir_ins = dir_data_f + "/gps/ins.csv"
         else:
             dir_ins = dir_data_f + "/vo/vo.csv"
+        pose_kind = self.choosePoseKind.currentIndex()
+        clear_h = self.clearHeight.isChecked()
 
         f = open('defaultDir.txt', 'w')
         lines = [dir_data_f, "\n", dir_extr_f, "\n", dir_models_f, "\n", dir_lidar_data, "\n",
                  str(self.chooseLidar.currentIndex()), "\n", str(self.chooseCamera.currentIndex()),
-                 "\n", str(self.choosePoseF.currentIndex()), "\n", start_time, "\n", end_time]
+                 "\n", str(self.choosePoseF.currentIndex()), "\n", start_time, "\n", end_time, "\n",
+                 dir_lidar_data_custom, "\n", dir_lidar_extr, "\n", dir_pose_data, "\n", dir_pose_extr, "\n",
+                 dir_lidar_synch, "\n", dir_pose_synch, "\n", str(pose_kind), "\n", str(clear_h), "\n",
+                 start_time_custom, "\n", end_time_custom]
         f.writelines(lines)
         f.close()
         self.count_time()
 
+
+    # Dla danych z SDK - wyliczanie potrzebnych "czasów" jakby ktoś ograniczył zakres wyświetlania pointclouda
     def count_time(self):
         global real_end_time, real_start_time
         path = dir_lidar + '.timestamps'
@@ -73,6 +119,8 @@ class SelectDataWindow(QtGui.QDialog, SelectDataWindowDesign.Ui_Dialog):
         f.close()
         real_end_time = int(real_start_time) + int(end_time) * 1000  # 1418381798086398, 1418381817118734
 
+
+    # Czytanie i wypisywanie danych z pliku "defaultDir.txt" do tzw. "formularzy"
     def read_dialog1(self):
         f = open('defaultDir.txt', 'r')
         self.chooseDataFolder.setText(f.readline())
@@ -84,8 +132,23 @@ class SelectDataWindow(QtGui.QDialog, SelectDataWindowDesign.Ui_Dialog):
         self.choosePoseF.setCurrentIndex(int(f.readline()))
         self.startTimeF.setText(f.readline())
         self.endTimeF.setText(f.readline())
+        self.chooseLidarData.setText(f.readline())
+        self.chooseLidarExtr.setText(f.readline())
+        self.choosePoseData.setText(f.readline())
+        self.choosePoseExtr.setText(f.readline())
+        self.synchLidarTime.setText(f.readline())
+        self.synchPoseTime.setText(f.readline())
+        self.choosePoseKind.setCurrentIndex(int(f.readline()))
+        if f.readline().replace('\n',"") == 'True':
+            self.clearHeight.setChecked(True)
+        else:
+            self.clearHeight.setChecked(False)
+        self.startTimeCustom.setText(f.readline())
+        self.endTimeCustom.setText(f.readline())
         f.close()
 
+
+    # Masa guzików "browse" - najprościej jak umiałem nie chciałem się zastanawiać godzinami
     def browse1(self):
         from tkFileDialog import askdirectory
         Tk().withdraw()
@@ -104,6 +167,77 @@ class SelectDataWindow(QtGui.QDialog, SelectDataWindowDesign.Ui_Dialog):
         directory = askdirectory()
         self.chooseModelsFolder.setText(directory)
 
+    def browse4(self):
+        from tkFileDialog import askdirectory
+        Tk().withdraw()
+        directory = askdirectory()
+        self.chooseLidarData.setText(directory)
+
+    def browse5(self):
+        from tkFileDialog import askdirectory
+        Tk().withdraw()
+        directory = askdirectory()
+        self.chooseLidarExtr.setText(directory)
+
+    def browse6(self):
+        from tkFileDialog import askdirectory
+        Tk().withdraw()
+        directory = askdirectory()
+        self.choosePoseData.setText(directory)
+
+    def browse7(self):
+        from tkFileDialog import askdirectory
+        Tk().withdraw()
+        directory = askdirectory()
+        self.choosePoseExtr.setText(directory)
+
+
+class SettingsWindow(QtGui.QDialog, ViewSettingWindowDesign.Ui_Dialog):
+    def __init__(self):
+        # Using super allows us to
+        # access variables, methods etc in the MainWindowDesign.py file
+        super(self.__class__, self).__init__()
+        self.setupUi(self)  # This is defined in MainWindowDesign.py file automatically
+                            # It sets up layout and widgets that are defined
+        try:
+            self.read_dialog2()
+        except:
+            pass
+        self.buttonBox.accepted.connect(self.save_dialog2)
+
+
+    def save_dialog2(self):
+        global grid, pixel_mode, points_colour, points_size
+
+        grid = self.checkBoxGrid.isChecked()
+        pixel_mode = self.checkBoxPixel.isChecked()
+        points_colour = self.checkBoxColors.isChecked()
+        points_size = self.choosePointsSize.text()
+
+        points_size = points_size.replace('\r', "").replace('\n', "")
+
+        f = open('defaultSettings.txt', 'w')
+        lines = [str(grid), "\n", str(pixel_mode), "\n", str(points_colour), "\n", points_size]
+        f.writelines(lines)
+        f.close()
+
+    def read_dialog2(self):
+        f = open('defaultSettings.txt', 'r')
+        if f.readline().replace('\n',"") == 'True':
+            self.checkBoxGrid.setChecked(True)
+        else:
+            self.checkBoxGrid.setChecked(False)
+        if f.readline().replace('\n',"") == 'True':
+            self.checkBoxPixel.setChecked(True)
+        else:
+            self.checkBoxPixel.setChecked(False)
+        if f.readline().replace('\n',"") == 'True':
+            self.checkBoxColors.setChecked(True)
+        else:
+            self.checkBoxColors.setChecked(False)
+        self.choosePointsSize.setText(f.readline())
+        f.close()
+
 
 class Application(QtGui.QMainWindow, MainWindowDesign.Ui_MainWindow):
     def __init__(self):
@@ -114,114 +248,23 @@ class Application(QtGui.QMainWindow, MainWindowDesign.Ui_MainWindow):
                             # It sets up layout and widgets that are defined
         self.pointcloudButton.clicked.connect(self.build_pointcloud)
         self.selectDataButton.clicked.connect(self.open_select_data)
-        self.settingButton.clicked.connect(self.drawme)
-        self.simulationButton.clicked.connect(self.build_pointcloud_live)
+        self.settingButton.clicked.connect(self.open_settings)
+        self.testyButton.clicked.connect(self.do_testowania)
 
     def open_select_data(self):
         self.dialog = SelectDataWindow()
         self.dialog.show()
 
-# Starocie raczej nie potrzebne, ale niech na razie zostaną
-
-    def get_IMU(self):
-        start = False
-        path = dir_lidar_data
-        dane_gps = []
-        sensors_file = open(path + '/sensors.csv', 'r')
-        for line in sensors_file:
-            id = line.split(',')[1]
-            if int(id) == 1:
-                txyzrpy =  [float(x) for x in line.split(',')[10:13]]
-                dane_gps.append(txyzrpy)
-                start = True
-            else:
-                if start == True:
-                    txyzrpy = [float(x) for x in line.split(',')[6:9]]
-                    if txyzrpy != []:
-                        dane_gps.append(txyzrpy)
-        if len(dane_gps) == 0:
-            raise ValueError("No GPS data found")
-        sensors_file.close()
-
-        gsp_file = open(path + '/daneIMU.csv', 'w')
-        aaa = csv.writer(gsp_file)
-        aaa.writerows(dane_gps)
-        gsp_file.close()
-        print 'Zakończono'
-
-    def daneIMU15_GPS(self):
-        path = dir_lidar_data
-        dane_gps = []
-        sensors_file = open(path + '/sensors.csv', 'r')
-        for line in sensors_file:
-            id = line.split(',')[1]
-            if int(id) == 1:
-                next_data = [float(x) for x in line.split(',')[2:5]]
-                next_imu = [float(x) for x in line.split(',')[10:13]]
-                try:
-                    x = np.linspace(last_data[0], next_data[0], 15)
-                    y = np.linspace(last_data[1], next_data[1], 15)
-                    z = np.linspace(last_data[2], next_data[2], 15)
-                    i = np.linspace(last_imu[0], next_imu[0], 15)
-                    m = np.linspace(last_imu[1], next_imu[1], 15)
-                    u = np.linspace(last_imu[2], next_imu[2], 15)
-                    for j in range(0, 15, 1):
-                        xyz = [x[j], y[j], z[j], i[j], m[j], u[j]]
-                        dane_gps.append(xyz)
-                    last_data = next_data
-                    last_imu = next_imu
-                except:
-                    last_data = next_data
-                    last_imu = next_imu
-        if len(dane_gps) == 0:
-            raise ValueError("No GPS data found")
-        sensors_file.close()
-
-        gsp_file = open(path + '/daneGPS+imu.csv', 'w')
-        aaa = csv.writer(gsp_file)
-        aaa.writerows(dane_gps)
-        gsp_file.close()
-        print 'Zakończono'
-
-
-    def dane_do_build_scan(self):
-        path = str(dir_lidar_data)
-        dane_lidar = []
-        lidar_data_file = open(path + '/dane_z_lidaru.csv', 'r')
-        for line in lidar_data_file:
-            try:
-                one_scan = [float(x) for x in line.split(',')[11:282]]
-                dane_lidar.append(one_scan)
-            except:
-                pass
-        lidar_data_file.close()
-
-        f = open(path + '/daneLidar.csv', 'w')
-        f_csv = csv.writer(f)
-        f_csv.writerows(dane_lidar)
-        f.close()
-        print 'Zakończono'
-
-        dane_pointcloud = []
-        lidar_data_file = open(path + '/dane_odleglosci_lidar.csv', 'r')
-        for line in lidar_data_file:
-            i = 45
-            for x in line.split(','):
-                s = np.pi / 180 * i
-                a = float(x) * sin(s)
-                b = float(x) * cos(s)
-                i = i + 1
-                one_point = [a] + [b] + [0]
-                dane_pointcloud.append(one_point)
-            dane_pointcloud = np.array(dane_pointcloud)
-            dane_pointcloud = dane_pointcloud.transpose()
-        lidar_data_file.close()
+    def open_settings(self):
+        self.dialog = SettingsWindow()
+        self.dialog.show()
 
 
 #SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS
 #SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS
 #SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS
 
+    ### Wyświetla dane z lidaru w linii prostej aż do "Zakończono funkcję step by step :DDDD"
     def stepbystep(self):
         path = str(dir_lidar_data)
         dane_lidar = []
@@ -238,8 +281,7 @@ class Application(QtGui.QMainWindow, MainWindowDesign.Ui_MainWindow):
         f_csv = csv.writer(f)
         f_csv.writerows(dane_lidar)
         f.close()
-        print 'Zakończono'
-
+        print 'Utworzono plik dane_odległosci_lidar.csv'
 
         licznik = -50
         dane_pointcloud = []
@@ -257,12 +299,11 @@ class Application(QtGui.QMainWindow, MainWindowDesign.Ui_MainWindow):
                 dane_pointcloud.append(one_point)
         lidar_data_file.close()
 
-
         f = open(path + '/danePointcloud.csv', 'w')
         f_csv = csv.writer(f)
         f_csv.writerows(dane_pointcloud)
         f.close()
-        print 'Zakończono'
+        print 'Utworzono plik danePointcloud.csv'
 
         klaudzik = []
         klaudzik_file = open(path + '/danePointcloud.csv', 'r')
@@ -271,230 +312,20 @@ class Application(QtGui.QMainWindow, MainWindowDesign.Ui_MainWindow):
             klaudzik.append(xyz)
         klaudzik_file.close()
 
-        print 'Zakończono'
+
         klaudzik = np.array(klaudzik)
         plot_item = gl.GLScatterPlotItem(pos=klaudzik, size=1, color=[0.7, 0.7, 0.7, 1], pxMode=True)
         plot_item.translate(5, 5, 0)
-        if self.pointcloudArea.items.__len__() > 0:
-            for i in range(0, self.pointcloudArea.items.__len__()):
-                self.pointcloudArea.items.__delitem__(i)
+        if self.pointcloudArea_2.items.__len__() > 0:
+            for i in range(0, self.pointcloudArea_2.items.__len__()):
+                self.pointcloudArea_2.items.__delitem__(i)
 
-        self.pointcloudArea.addItem(plot_item)
-        print 'Zakończono :DDDD'
-
-
-    def timestampy(self):
-        dane = []
-        f = open(dir_lidar_data + '/lms_front.timestamps', 'w')
-        fc = csv.writer(f)
-        for i in range(0, 1530, 1):
-            dane.append([str(i * 66666 + 1000000) + ' 1'])
-        fc.writerows(dane)
-        f.close()
-        print "koniec"
+        self.pointcloudArea_2.addItem(plot_item)
+        print 'Zakończono funkcję step by step :DDDD'
 
 
-    def RPY_metoda_AKC_MAGN(self):
-        path = dir_lidar_data
-        dane_gps = []
-        sensors_file = open(path + '/sensors.csv', 'r')
-        for line in sensors_file:
-            id = line.split(',')[1]
-            if int(id) == 1:
-                next_data = [float(x) for x in line.split(',')[2:5]]
-                try:
-                    x = np.linspace(last_data[0], next_data[0], 15)
-                    y = np.linspace(last_data[1], next_data[1], 15)
-                    z = np.linspace(last_data[2], next_data[2], 15)
-                    for j in range(0, 15, 1):
-                        xyz = [x[j], y[j], z[j]]
-                        dane_gps.append(xyz)
-                    last_data = next_data
-                except:
-                    last_data = next_data
-        if len(dane_gps) == 0:
-            raise ValueError("No GPS data found")
-        sensors_file.close()
-
-        gsp_file = open(path + '/dane_sam_GPS.csv', 'w')
-        aaa = csv.writer(gsp_file)
-        aaa.writerows(dane_gps)
-        gsp_file.close()
-        print 'Zakończono'
-
-        start = False
-        i = 0
-        path = dir_lidar_data
-        dane_imu = []
-        sensors_file = open(path + '/sensors.csv', 'r')
-        for line in sensors_file:
-            id = line.split(',')[1]
-            if int(id) == 1:
-                start = True
-                imu = [float(x) for x in line.split(',')[6:9]] + [float(x) for x in line.split(',')[14:17]]
-                roll = np.arctan2((-imu[1]), imu[2])
-                pitch = np.arcsin(-imu[0] / 9.81)
-                yaw = np.arctan2((sin(roll) * imu[5] - cos(roll) * (-imu[4])),
-                                 (cos(pitch) * imu[3] + sin(roll) * sin(pitch) * (-imu[4])) +
-                                 cos(roll) * sin(pitch) * imu[5])
-                rpy = [roll * np.pi / 180, pitch * np.pi / 180, yaw * np.pi / 180]
-                dane_imu.append(rpy)
-            if start == True and i >= 3 and int(id) != 1 and line.split(',')[10:13] != []:
-                imu = [float(x) for x in line.split(',')[2:5]] + [float(x) for x in line.split(',')[10:13]]
-                roll = np.arctan2((-imu[1]), imu[2])
-                pitch = np.arcsin(-imu[0] / 9.81)
-                yaw = np.arctan2((sin(roll) * imu[5] - cos(roll) * (-imu[4])),
-                                 (cos(pitch) * imu[3] + sin(roll) * sin(pitch) * (-imu[4])) +
-                                 cos(roll) * sin(pitch) * imu[5])
-                rpy = [roll * np.pi / 180, pitch * np.pi / 180, yaw * np.pi / 180]
-                dane_imu.append(rpy)
-                i = 0
-            i = i + 1
-        gsp_file = open(path + '/dane_RPY_AKC_MAG.csv', 'w')
-        aaa = csv.writer(gsp_file)
-        aaa.writerows(dane_imu)
-        gsp_file.close()
-        print 'Zakończono'
-
-
-    def RPY_metoda_ZYRO(self):
-        path = dir_lidar_data
-        dane_gps = []
-        sensors_file = open(path + '/sensors.csv', 'r')
-        for line in sensors_file:
-            id = line.split(',')[1]
-            if int(id) == 1:
-                next_data = [float(x) for x in line.split(',')[2:5]]
-                try:
-                    x = np.linspace(last_data[0], next_data[0], 15)
-                    y = np.linspace(last_data[1], next_data[1], 15)
-                    z = np.linspace(last_data[2], next_data[2], 15)
-                    for j in range(0, 15, 1):
-                        xyz = [x[j], y[j], z[j]]
-                        dane_gps.append(xyz)
-                    last_data = next_data
-                except:
-                    last_data = next_data
-        if len(dane_gps) == 0:
-            raise ValueError("No GPS data found")
-        sensors_file.close()
-
-        gsp_file = open(path + '/dane_sam_GPS.csv', 'w')
-        aaa = csv.writer(gsp_file)
-        aaa.writerows(dane_gps)
-        gsp_file.close()
-        print 'Zakończono'
-
-        start = False
-        i = 0
-        path = dir_lidar_data
-        dane_imu = []
-        sensors_file = open(path + '/sensors.csv', 'r')
-        for line in sensors_file:
-            id = line.split(',')[1]
-            if int(id) == 1:
-                start = True
-                imu = [float(x) for x in line.split(',')[10:13]]
-                roll = np.arctan2((imu[0] * 0.06), 1)
-                pitch = np.arcsin(-imu[1] * 0.06)
-                yaw = np.arctan2((imu[2] * 0.06), 1)
-                rpy = [roll * np.pi / 180, pitch * np.pi / 180, yaw * np.pi / 180]
-                dane_imu.append(rpy)
-            if start == True and i >= 3 and int(id) != 1 and line.split(',')[6:9] != ["","",""]:
-                imu = [float(x) for x in line.split(',')[6:9]]
-                roll = np.arctan2((imu[0] * 0.06), 1)
-                pitch = np.arcsin(-imu[1] * 0.06)
-                yaw = np.arctan2((imu[2] * 0.06), 1)
-                rpy = [roll * np.pi / 180, pitch * np.pi / 180, yaw * np.pi / 180]
-                dane_imu.append(rpy)
-                i = 0
-            i = i + 1
-        gsp_file = open(path + '/dane_RPY_ZYRO.csv', 'w')
-        aaa = csv.writer(gsp_file)
-        aaa.writerows(dane_imu)
-        gsp_file.close()
-        print 'Zakończono'
-
-
-    def GPS_z_dwoch(self):
-        dane_gps = []
-        x = np.linspace(6027547.29171011, 6027597.66872427, 1530)
-        y = np.linspace(345111.874480535, 345130.419515812, 1530)
-        z = np.linspace(-40, -49, 1530)
-        for j in range(0, 1530, 1):
-            xyz = [x[j], y[j], z[j]]
-            dane_gps.append(xyz)
-
-        path = dir_lidar_data
-        gsp_file = open(path + '/daneGPS_tylko_z_dwoch.csv', 'w')
-        aaa = csv.writer(gsp_file)
-        aaa.writerows(dane_gps)
-        gsp_file.close()
-        print 'Zakończono'
-
-
-    def GPS_15_real(self):
-        # różni się o stałą 0.0098 dla northing i stałą 0.001 dla easting
-        k0 = 0.9996
-        e = 0.081819
-        AA = 6367449.15
-        alpha1 = 0.0008377318
-        alpha2 = 7.60852780571568E-07
-        alpha3 = 1.19764551083372E-09
-        alpha4 = 2.42917070093028E-12
-        alpha5 = 5.71181842951141E-15
-        alpha6 = 1.47999804582115E-17
-        zone = 21
-
-        path = dir_lidar_data
-        dane_gps = []
-        sensors_file = open(path + '/sensors.csv', 'r')
-        for line in sensors_file:
-            id = line.split(',')[1]
-            if int(id) == 1:
-                next_data = [float(x) for x in line.split(',')[2:5]]
-                try:
-                    x = np.linspace(last_data[0], next_data[0], 15)
-                    y = np.linspace(last_data[1], next_data[1], 15)
-                    # z = np.linspace(last_data[2], next_data[2], 15)
-                    for j in range(0, 15, 1):
-                        kH = (y[j] - zone) * np.pi / 180
-                        kJ = x[j] * np.pi / 180
-                        kM = sinh(e * atanh(e * tan(kJ) / sqrt(1 + tan(kJ) * tan(kJ))))
-                        kO = atan(tan(kJ) * sqrt(1 + kM * kM) - kM * sqrt(1 + tan(kJ) * tan(kJ)))
-                        kQ = atan(tan(kO) / cos(kH))
-                        kR = asinh(sin(kH) / sqrt(tan(kO) * tan(kO) + (cos(kH) * cos(kH))))
-                        kS = kQ + alpha1 * sin(2 * kQ) * cosh(2 * kR) + alpha2 * sin(4 * kQ) * cosh(
-                            4 * kR) + alpha3 * sin(6 * kQ) * cosh(6 * kR) + alpha4 * sin(8 * kQ) * cosh(
-                            8 * kR) + alpha5 * sin(10 * kQ) * cosh(10 * kR) + alpha6 * sin(12 * kQ) * cosh(12 * kR)
-                        kT = kR + alpha1 * cos(2 * kQ) * sinh(2 * kR) + alpha2 * cos(4 * kQ) * sinh(
-                            4 * kR) + alpha3 * cos(6 * kQ) * sinh(6 * kR) + alpha4 * cos(8 * kQ) * sinh(
-                            8 * kR) + alpha5 * cos(10 * kQ) * sinh(10 * kR) + alpha6 * cos(12 * kQ) * sinh(12 * kR)
-                        kU = k0 * AA * kT
-                        kV = k0 * AA * kS
-                        kW = 500000
-                        easting = kU + kW
-                        if kV > 0:
-                            northing = kV
-                        else:
-                            northing = kV + 10000000
-                        xyz = [northing, easting]
-                        dane_gps.append(xyz)
-                    last_data = next_data
-                except:
-                    last_data = next_data
-        if len(dane_gps) == 0:
-            raise ValueError("No GPS data found")
-        sensors_file.close()
-
-        gsp_file = open(path + '/dane_sam_GPS_real.csv', 'w')
-        aaa = csv.writer(gsp_file)
-        aaa.writerows(dane_gps)
-        gsp_file.close()
-        print 'Zakończono'
-
-
-    def all_my_knowledge_together(self):
+    # Będę to sprawdzał i poprawiał zostaw na razie pls
+    def calkowanie_zyro_jest_zle_na_razie(self):
         k0 = 0.9996
         e = 0.081819
         AA = 6367449.15
@@ -570,6 +401,10 @@ class Application(QtGui.QMainWindow, MainWindowDesign.Ui_MainWindow):
 
         start = False
         i = 0
+        t = 0.06
+        roll = 0
+        pitch = 0
+        yaw = 0
         dane_imu = []
         sensors_file = open(path + '/sensors.csv', 'r')
         for line in sensors_file:
@@ -577,17 +412,61 @@ class Application(QtGui.QMainWindow, MainWindowDesign.Ui_MainWindow):
             if int(id) == 1:
                 start = True
                 imu = [float(x) for x in line.split(',')[10:13]]
-                roll = np.arctan2((imu[0] * 0.06), 1)
-                pitch = np.arcsin(-imu[1] * 0.06)
-                yaw = np.arctan2((imu[2] * 0.06), 1)
-                rpy = [roll * np.pi / 180, pitch * np.pi / 180, yaw * np.pi / 180]
+
+                r11 = cos(pitch) * cos(yaw)
+                r12 = sin(roll) * sin(pitch) * cos(yaw) - cos(roll) * sin(yaw)
+                r13 = cos(roll) * sin(pitch) * cos(yaw) + sin(roll) * sin(yaw)
+                r21 = cos(pitch) * sin(yaw)
+                r22 = sin(roll) * sin(pitch) * sin(yaw) + cos(roll) * cos(yaw)
+                r23 = cos(roll) * sin(pitch) * sin(yaw) - sin(roll) * cos(yaw)
+                r31 = -sin(pitch)
+                r32 = sin(roll) * cos(pitch)
+                r33 = cos(roll) * cos(pitch)
+
+                r11_next = r11 + r12 * imu[2] * t + r13 * imu[0] * t
+                r12_next = r11 * (-imu[2]) * t + r12 + r13 * (-imu[1]) * t
+                r13_next = r11 * (-imu[0]) * t + r12 * imu[1] * t + r13
+                r21_next = r21 + r22 * imu[2] * t + r23 * imu[0] * t
+                r22_next = r21 * (-imu[2]) * t + r22 + r23 * (-imu[1]) * t
+                r23_next = r21 * (-imu[0]) * t + r22 * imu[1] * t + r23
+                r31_next = r31 + r32 * imu[2] * t + r33 * imu[0] * t
+                r32_next = r31 * (-imu[2]) * t + r32 + r33 * (-imu[1]) * t
+                r33_next = r31 * (-imu[0]) * t + r32 * imu[1] * t + r33
+
+                roll = np.arctan2(r32_next, r33_next)
+                pitch = np.arcsin(-r31_next)
+                yaw = np.arctan2(r21_next, r11_next)
+
+                rpy = [roll * pi / 180, pitch * pi / 180, yaw * pi / 180]
                 dane_imu.append(rpy)
-            if start == True and i >= 3 and int(id) != 1 and line.split(',')[6:9] != []:
+            if start == True and i >= 3 and int(id) != 1 and line.split(',')[6:9] != [] and line.split(',')[6:9] != ['','','']:
                 imu = [float(x) for x in line.split(',')[6:9]]
-                roll = np.arctan2((imu[0] * 0.06), 1)
-                pitch = np.arcsin(-imu[1] * 0.06)
-                yaw = np.arctan2((imu[2] * 0.06), 1)
-                rpy = [roll * np.pi / 180, pitch * np.pi / 180, yaw * np.pi / 180]
+
+                r11 = cos(pitch) * cos(yaw)
+                r12 = sin(roll) * sin(pitch) * cos(yaw) - cos(roll) * sin(yaw)
+                r13 = cos(roll) * sin(pitch) * cos(yaw) + sin(roll) * sin(yaw)
+                r21 = cos(pitch) * sin(yaw)
+                r22 = sin(roll) * sin(pitch) * sin(yaw) + cos(roll) * cos(yaw)
+                r23 = cos(roll) * sin(pitch) * sin(yaw) - sin(roll) * cos(yaw)
+                r31 = -sin(pitch)
+                r32 = sin(roll) * cos(pitch)
+                r33 = cos(roll) * cos(pitch)
+
+                r11_next = r11 + r12 * imu[2] * t + r13 * imu[0] * t
+                r12_next = r11 * (-imu[2]) * t + r12 + r13 * (-imu[1]) * t
+                r13_next = r11 * (-imu[0]) * t + r12 * imu[1] * t + r13
+                r21_next = r21 + r22 * imu[2] * t + r23 * imu[0] * t
+                r22_next = r21 * (-imu[2]) * t + r22 + r23 * (-imu[1]) * t
+                r23_next = r21 * (-imu[0]) * t + r22 * imu[1] * t + r23
+                r31_next = r31 + r32 * imu[2] * t + r33 * imu[0] * t
+                r32_next = r31 * (-imu[2]) * t + r32 + r33 * (-imu[1]) * t
+                r33_next = r31 * (-imu[0]) * t + r32 * imu[1] * t + r33
+
+                roll = np.arctan2(r32_next, r33_next)
+                pitch = np.arcsin(-r31_next)
+                yaw = np.arctan2(r21_next, r11_next)
+
+                rpy = [roll * pi / 180, pitch * pi / 180, yaw * pi / 180]
                 dane_imu.append(rpy)
                 i = 0
             i = i + 1
@@ -595,11 +474,13 @@ class Application(QtGui.QMainWindow, MainWindowDesign.Ui_MainWindow):
                 break
         sensors_file.close()
 
+
         rpy_file = open(path + '/dane_RPY_ZYRO.csv', 'w')
         csv_rpy_file = csv.writer(rpy_file)
         csv_rpy_file.writerows(dane_imu)
         rpy_file.close()
         print 'Utworzone plik dane_RPY_ZYRO.csv'
+
 
         dane = []
         ins_file = open(path + '/gps/ins.csv', 'w')
@@ -609,75 +490,376 @@ class Application(QtGui.QMainWindow, MainWindowDesign.Ui_MainWindow):
         csv_ins_file.writerows(dane)
         ins_file.close()
         print 'Utworzone plik ins.csv'
-#SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS
-#SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS
-#SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS
 
-    def drawme(self):
+
+    # Raczej najlepsze do tej pory, AKC+MAG i rozszerzanie GPS razy 15
+    def poniekad_dobrze_metoda_akcelerometr_magnetometr(self):
+        k0 = 0.9996
+        e = 0.081819
+        AA = 6367449.15
+        alpha1 = 0.0008377318
+        alpha2 = 7.60852780571568E-07
+        alpha3 = 1.19764551083372E-09
+        alpha4 = 2.42917070093028E-12
+        alpha5 = 5.71181842951141E-15
+        alpha6 = 1.47999804582115E-17
+        zone = 21
+
         path = str(dir_lidar_data)
-        dane_lidar = []
-        lidar_data_file = open(path + '/dane_z_lidaru.csv', 'r')
-        for line in lidar_data_file:
+        dane_gps = []
+        sensors_file = open(path + '/sensors.csv', 'r')
+        for line in sensors_file:
+            id = line.split(',')[1]
+            if int(id) == 1:
+                next_data = [float(x) for x in line.split(',')[2:5]]
+                try:
+                    x = np.linspace(last_data[0], next_data[0], 15)
+                    y = np.linspace(last_data[1], next_data[1], 15)
+                    # z = np.linspace(last_data[2], next_data[2], 15)
+                    for j in range(0, 15, 1):
+                        kH = (y[j] - zone) * np.pi / 180
+                        kJ = x[j] * np.pi / 180
+                        kM = sinh(e * atanh(e * tan(kJ) / sqrt(1 + tan(kJ) * tan(kJ))))
+                        kO = atan(tan(kJ) * sqrt(1 + kM * kM) - kM * sqrt(1 + tan(kJ) * tan(kJ)))
+                        kQ = atan(tan(kO) / cos(kH))
+                        kR = asinh(sin(kH) / sqrt(tan(kO) * tan(kO) + (cos(kH) * cos(kH))))
+                        kS = kQ + alpha1 * sin(2 * kQ) * cosh(2 * kR) + alpha2 * sin(4 * kQ) * cosh(
+                            4 * kR) + alpha3 * sin(6 * kQ) * cosh(6 * kR) + alpha4 * sin(8 * kQ) * cosh(
+                            8 * kR) + alpha5 * sin(10 * kQ) * cosh(10 * kR) + alpha6 * sin(12 * kQ) * cosh(12 * kR)
+                        kT = kR + alpha1 * cos(2 * kQ) * sinh(2 * kR) + alpha2 * cos(4 * kQ) * sinh(
+                            4 * kR) + alpha3 * cos(6 * kQ) * sinh(6 * kR) + alpha4 * cos(8 * kQ) * sinh(
+                            8 * kR) + alpha5 * cos(10 * kQ) * sinh(10 * kR) + alpha6 * cos(12 * kQ) * sinh(12 * kR)
+                        kU = k0 * AA * kT
+                        kV = k0 * AA * kS
+                        kW = 500000
+                        easting = kU + kW
+                        if kV > 0:
+                            northing = kV
+                        else:
+                            northing = kV + 10000000
+                        xyz = [northing, easting, 0]
+                        dane_gps.append(xyz)
+                    last_data = next_data
+                except:
+                    last_data = next_data
+        if len(dane_gps) == 0:
+            raise ValueError("No GPS data found")
+        sensors_file.close()
+        print 'Ilość pozycji z GPS:'
+        print len(dane_gps)
+
+        gsp_file = open(path + '/dane_GPS.csv', 'w')
+        csv_gps_file = csv.writer(gsp_file)
+        csv_gps_file.writerows(dane_gps)
+        gsp_file.close()
+        print 'Utworzono plik dane_GPS.csv'
+
+        dane_time = []
+        dane_time_only = []
+        time_file = open(dir_lidar_data + '/lms_front.timestamps', 'w')
+        csv_time_file = csv.writer(time_file)
+        for i in range(0, len(dane_gps), 1):
+            dane_time.append([str(i * 66666 + 1000000) + ' 1'])
+            dane_time_only.append([i * 66666 + 100000])
+        csv_time_file.writerows(dane_time)
+        time_file.close()
+        print "Utworzono plik lms_front.timestamps"
+
+        start = False
+        i = 0
+        path = dir_lidar_data
+        dane_imu = []
+        sensors_file = open(path + '/sensors.csv', 'r')
+        for line in sensors_file:
+            id = line.split(',')[1]
+            if int(id) == 1:
+                start = True
+                imu = [float(x) for x in line.split(',')[6:9]] + [float(x) for x in line.split(',')[14:17]]
+                roll = np.arctan2((-imu[0]), imu[2])
+                pitch = np.arcsin(imu[1] / 9.81)
+                yaw = np.arctan2((sin(roll) * imu[5] - cos(roll) * (-imu[3])),
+                                 (cos(pitch) * (-imu[4]) + sin(roll) * sin(pitch) * (-imu[3])) +
+                                 cos(roll) * sin(pitch) * imu[5])
+                rpy = [roll, pitch, yaw]
+                dane_imu.append(rpy)
+            if start == True and i >= 3 and int(id) != 1 and line.split(',')[10:13] != [] and line.split(',')[
+                                                                                              10:13] != ['', '', '']:
+                imu = [float(x) for x in line.split(',')[2:5]] + [float(x) for x in line.split(',')[10:13]]
+                roll = np.arctan2((-imu[0]), imu[2])
+                pitch = np.arcsin(imu[1] / 9.81)
+                yaw = np.arctan2((sin(roll) * imu[5] - cos(roll) * (-imu[3])),
+                                 (cos(pitch) * (-imu[4]) + sin(roll) * sin(pitch) * (-imu[3])) +
+                                 cos(roll) * sin(pitch) * imu[5])
+                rpy = [roll ,pitch, yaw]
+                dane_imu.append(rpy)
+                i = 0
+            i = i + 1
+        imu_file = open(path + '/dane_RPY_AKC_MAG.csv', 'w')
+        csv_imu_file = csv.writer(imu_file)
+        csv_imu_file.writerows(dane_imu)
+        imu_file.close()
+        print 'Utworzono plik dane_RPY_AKC_MAG.csv'
+
+        dane = []
+        ins_file = open(path + '/gps/ins.csv', 'w')
+        csv_ins_file = csv.writer(ins_file)
+        for i in range(0, len(dane_time), 1):
+            dane.append(dane_time_only[i] + dane_gps[i] + dane_imu[i])
+        csv_ins_file.writerows(dane)
+        ins_file.close()
+        print 'Utworzone plik ins.csv'
+
+
+    # Poprawione timestampy liczą się z lidaru, a tak czyste dane z kamery
+    def marek_wersja_1(self):
+
+        path = str(dir_lidar_data)
+        dane_xyz = []
+        dane_time = []
+        dane_imu = []
+        sensors_file = open(path + '/vo_poses9_2.csv', 'r')
+        for line in sensors_file:
             try:
-                one_scan = [float(x) for x in line.split(',')[11:282]]
-                dane_lidar.append(one_scan)
+                vector = [float(x) for x in line.split(',')[0:13]]
+                roll = np.arctan2(vector[11], vector[12])
+                pitch = np.arcsin(-vector[10])
+                yaw = np.arctan2(vector[7], vector[4])
+                dane_xyz.append([vector[1], vector[2], vector[3]])
+                dane_imu.append([yaw, roll, pitch])
             except:
                 pass
-        lidar_data_file.close()
+        if len(dane_xyz) == 0:
+            raise ValueError("No GPS data found")
+        sensors_file.close()
+        print 'Ilość pozycji XYZ:'
+        print len(dane_xyz)
 
-        f = open(path + '/dane_odleglosci_lidar.csv', 'w')
-        f_csv = csv.writer(f)
-        f_csv.writerows(dane_lidar)
-        f.close()
-        print 'Zakończono'
+        gsp_file = open(path + '/dane_XYZ.csv', 'w')
+        csv_gps_file = csv.writer(gsp_file)
+        csv_gps_file.writerows(dane_xyz)
+        gsp_file.close()
+        print 'Utworzono plik dane_XYZ.csv'
 
-        licznik = -50
-        dane_pointcloud = []
-        lidar_data_file = open(path + '/dane_odleglosci_lidar.csv', 'r')
-        for line in lidar_data_file:
-            licznik = licznik + 0.06
-            i = 45
-            for x in line.split(','):
-                s = np.pi / 180 * i
-                a = float(x) * sin(s)
-                b = float(x) * cos(s)
-                c = licznik
-                i = i + 1
-                one_point = [c] + [a] + [b]
-                dane_pointcloud.append(one_point)
-        lidar_data_file.close()
 
-        f = open(path + '/danePointcloud.csv', 'w')
-        f_csv = csv.writer(f)
-        f_csv.writerows(dane_pointcloud)
-        f.close()
-        print 'Zakończono'
+        pierwsza_wartosc = True
+        time_file = open(path + '/dane_z_lidaru.csv', 'r')
+        for line in time_file:
+            dane_time.append(float(line.split(',')[0]))
+            if pierwsza_wartosc == True:
+                odjemnik = line.split(',')[0]
+                pierwsza_wartosc = False
+        for i in range(len(dane_time)):
+            dane_time[i] = [int(dane_time[i] - float(odjemnik))]
 
-        klaudzik = []
-        klaudzik_file = open(path + '/danePointcloud.csv', 'r')
-        for line in klaudzik_file:
-            xyz = np.matrix([[float(x) for x in line.split(',')[0:3]]])
-            klaudzik.append(xyz)
-        klaudzik_file.close()
+        time_file = open(dir_lidar_data + '/lms_front.timestamps', 'w')
+        csv_time_file = csv.writer(time_file)
+        csv_time_file.writerows(dane_time)
+        time_file.close()
+        print "Utworzono plik lms_front.timestamps"
 
-        print 'Zakończono'
-        klaudzik = np.array(klaudzik)
-        plot_item = gl.GLScatterPlotItem(pos=klaudzik, size=1, color=[0.7, 0.7, 0.7, 1], pxMode=True)
-        plot_item.translate(5, 5, 0)
-        if self.pointcloudArea_2.items.__len__() > 0:
-            for i in range(0, self.pointcloudArea_2.items.__len__()):
-                self.pointcloudArea_2.items.__delitem__(i)
 
-        self.pointcloudArea_2.addItem(plot_item)
-        print 'Zakończono :DDDD'
+        imu_file = open(path + '/dane_vo.csv', 'w')
+        csv_imu_file = csv.writer(imu_file)
+        csv_imu_file.writerows(dane_imu)
+        imu_file.close()
+        print 'Utworzono plik dane_vo.csv'
+
+
+        dane = []
+        ins_file = open(path + '/gps/ins.csv', 'w')
+        csv_ins_file = csv.writer(ins_file)
+        if len(dane_xyz) >= dane_time:
+            t = len(dane_time)
+        else:
+            t = len(dane_xyz)
+        for i in range(0, t, 1):
+            dane.append(dane_time[i] + dane_xyz[i] + dane_imu[i])
+        csv_ins_file.writerows(dane)
+        ins_file.close()
+        print 'Utworzone plik ins.csv'
+
+
+    # Wersja 2 jest podobna do 1, zmienione tylko że linspacem żeby było więcej danych z pozycji bez interpolacji
+    def marek_wersja_2(self):
+        path = str(dir_lidar_data)
+        dane_xyz = []
+        dane_time = []
+        dane_imu = []
+
+        sensors_file = open(path + '/vo_poses9_1.csv', 'r')
+        for line in sensors_file:
+            try:
+                vector = [float(x) for x in line.split(',')[0:13]]
+                roll = np.arctan2(vector[11], vector[12])
+                pitch = np.arcsin(-vector[10])
+                yaw = np.arctan2(vector[7], vector[4])
+                next_data = [vector[3], vector[1]]
+            except:
+                pass
+            try:
+                x = np.linspace(last_data[0], next_data[0], 3)
+                y = np.linspace(last_data[1], next_data[1], 3)
+                for j in range(0, 3, 1):
+                    xyz = [x[j], y[j], 0]
+                    dane_xyz.append(xyz)
+                    dane_imu.append([yaw, roll, pitch])
+            except:
+                pass
+            try:
+                last_data = next_data
+            except:
+                pass
+        if len(dane_xyz) == 0:
+            raise ValueError("No GPS data found")
+        sensors_file.close()
+        print 'Ilość pozycji XYZ:'
+        print len(dane_xyz)
+
+        gsp_file = open(path + '/dane_XYZ.csv', 'w')
+        csv_gps_file = csv.writer(gsp_file)
+        csv_gps_file.writerows(dane_xyz)
+        gsp_file.close()
+        print 'Utworzono plik dane_XYZ.csv'
+
+
+        pierwsza_wartosc = True
+        time_file = open(path + '/dane_z_lidaru.csv', 'r')
+        for line in time_file:
+            dane_time.append(float(line.split(',')[0]))
+            if pierwsza_wartosc == True:
+                odjemnik = line.split(',')[0]
+                pierwsza_wartosc = False
+        for i in range(len(dane_time)):
+            dane_time[i] = [int(dane_time[i] - float(odjemnik))]
+
+        time_file = open(dir_lidar_data + '/lms_front.timestamps', 'w')
+        csv_time_file = csv.writer(time_file)
+        csv_time_file.writerows(dane_time)
+        time_file.close()
+        print "Utworzono plik lms_front.timestamps"
+
+
+
+        imu_file = open(path + '/dane_vo.csv', 'w')
+        csv_imu_file = csv.writer(imu_file)
+        csv_imu_file.writerows(dane_imu)
+        imu_file.close()
+        print 'Utworzono plik dane_vo.csv'
+
+
+        dane = []
+        ins_file = open(path + '/gps/ins.csv', 'w')
+        csv_ins_file = csv.writer(ins_file)
+        if len(dane_xyz) >= dane_time:
+            t = len(dane_time)
+        else:
+            t = len(dane_xyz)
+        for i in range(0, t, 1):
+            dane.append(dane_time[i] + dane_xyz[i] + dane_imu[i])
+        csv_ins_file.writerows(dane)
+        ins_file.close()
+        print 'Utworzone plik ins.csv'
+
+
+#SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS
+#SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS
+#SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS
+
+    # Funkcja do wyświetlania, testowania czegokolwiek uruchamiana guzikiem "Testy"
+    def do_testowania(self):
+
+        path = os.path.split(str(dir_lidar_data_custom))[0]
+        dane_xyz = []
+        dane_time = []
+        dane_imu = []
+        sensors_file = open(str(dir_lidar_data), 'r')
+        for line in sensors_file:
+            try:
+                vector = [float(x) for x in line.split(',')[0:13]]
+                roll = np.arctan2(vector[11], vector[12])
+                pitch = np.arcsin(-vector[10])
+                yaw = np.arctan2(vector[7], vector[4])
+                next_data = [vector[3], vector[1]]
+            except:
+                pass
+            try:
+                x = np.linspace(last_data[0], next_data[0], 3)
+                y = np.linspace(last_data[1], next_data[1], 3)
+                for j in range(0, 3, 1):
+                    xyz = [x[j], y[j], 0]
+                    dane_xyz.append(xyz)
+                    dane_imu.append([yaw, roll, pitch])
+            except:
+                pass
+            try:
+                last_data = next_data
+            except:
+                pass
+        if len(dane_xyz) == 0:
+            raise ValueError("No GPS data found")
+        sensors_file.close()
+        print 'Ilość pozycji XYZ:'
+        print len(dane_xyz)
+
+
+        gsp_file = open(path + '/dane_XYZ.csv', 'w')
+        csv_gps_file = csv.writer(gsp_file)
+        csv_gps_file.writerows(dane_xyz)
+        gsp_file.close()
+        print 'Utworzono plik dane_XYZ.csv'
+
+        imu_file = open(path + '/dane_vo.csv', 'w')
+        csv_imu_file = csv.writer(imu_file)
+        csv_imu_file.writerows(dane_imu)
+        imu_file.close()
+        print 'Utworzono plik dane_vo.csv'
+
+
+        pierwsza_wartosc = True
+        time_file = open(str(dir_lidar_data_custom), 'r')
+        for line in time_file:
+            dane_time.append(float(line.split(',')[0]))
+            if pierwsza_wartosc == True:
+                odjemnik = line.split(',')[0]
+                pierwsza_wartosc = False
+        for i in range(len(dane_time)):
+            dane_time[i] = [int(dane_time[i] - float(odjemnik))] + [' 1']
+
+        time_file = open(path + '/plik.timestamps', 'w')
+        csv_time_file = csv.writer(time_file)
+        csv_time_file.writerows(dane_time)
+        time_file.close()
+        print "Utworzono plik.timestamps"
+
+
+        dane = []
+        ins_file = open(path + '/ins.csv', 'w')
+        csv_ins_file = csv.writer(ins_file)
+        if len(dane_xyz) >= dane_time:
+            t = len(dane_time)
+        else:
+            t = len(dane_xyz)
+        for i in range(0, t, 1):
+            dane.append(dane_time[i] + dane_xyz[i] + dane_imu[i])
+        csv_ins_file.writerows(dane)
+        ins_file.close()
+        print 'Utworzone plik ins.csv'
 
 
 
     def build_pointcloud(self):
-        self.new_thread = BuildPointcloudThread(   str(dir_lidar),
-                                                   str(dir_ins),
-                                                   str(dir_extr_f),
-                                                   real_start_time, real_end_time)
+        if sdk:
+            self.new_thread = BuildPointcloudThread(str(dir_lidar),
+                                                    str(dir_ins),
+                                                    str(dir_extr_f),
+                                                    real_start_time, real_end_time)
+        else:
+            self.new_thread = BuildPointcloudThread(str(dir_lidar_data_custom),
+                                                    str(dir_pose_data),
+                                                    str(dir_lidar_extr),
+                                                    int(start_time_custom), int(end_time_custom), -1, str(dir_pose_extr), int(pose_kind))
+
+
         self.connect(self.new_thread, SIGNAL("drawPointcloud(PyQt_PyObject)"), self.draw_pointcloud)
         self.new_thread.start()
         self.pointcloudButton.setEnabled(False)
@@ -700,6 +882,8 @@ class Application(QtGui.QMainWindow, MainWindowDesign.Ui_MainWindow):
         self.pointcloudButton.setEnabled(True)
         self.pointcloudButton.setText("Build and draw sample pointcloud")
 
+
+    # Potencjalnie do usunięcia
     def build_pointcloud_live(self):
         #Nie działa
         self.new_thread2 = BuildPointcloudThreadLive(str(dir_lidar),
