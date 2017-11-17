@@ -266,7 +266,7 @@ class Application(QtGui.QMainWindow, MainWindowDesign.Ui_MainWindow):
 
     ### Wyświetla dane z lidaru w linii prostej aż do "Zakończono funkcję step by step :DDDD"
     def stepbystep(self):
-        path = str(dir_lidar_data)
+        path = os.path.split(str(dir_lidar_data))[0]           #do okienka testowego ścieżka do pliku danych z lidaru (nieobrobionych)
         dane_lidar = []
         lidar_data_file = open(path + '/dane_z_lidaru.csv', 'r')
         for line in lidar_data_file:
@@ -312,15 +312,14 @@ class Application(QtGui.QMainWindow, MainWindowDesign.Ui_MainWindow):
             klaudzik.append(xyz)
         klaudzik_file.close()
 
-
         klaudzik = np.array(klaudzik)
         plot_item = gl.GLScatterPlotItem(pos=klaudzik, size=1, color=[0.7, 0.7, 0.7, 1], pxMode=True)
         plot_item.translate(5, 5, 0)
-        if self.pointcloudArea_2.items.__len__() > 0:
-            for i in range(0, self.pointcloudArea_2.items.__len__()):
-                self.pointcloudArea_2.items.__delitem__(i)
+        if self.pointcloudArea.items.__len__() > 0:
+            for i in range(0, self.pointcloudArea.items.__len__()):
+                self.pointcloudArea.items.__delitem__(i)
 
-        self.pointcloudArea_2.addItem(plot_item)
+        self.pointcloudArea.addItem(plot_item)
         print 'Zakończono funkcję step by step :DDDD'
 
 
@@ -379,12 +378,6 @@ class Application(QtGui.QMainWindow, MainWindowDesign.Ui_MainWindow):
         sensors_file.close()
         print 'Ilość pozycji z GPS:'
         print len(dane_gps)
-
-        gsp_file = open(path + '/dane_GPS.csv', 'w')
-        csv_gps_file = csv.writer(gsp_file)
-        csv_gps_file.writerows(dane_gps)
-        gsp_file.close()
-        print 'Utworzono plik dane_GPS.csv'
 
 
         dane_time = []
@@ -474,14 +467,6 @@ class Application(QtGui.QMainWindow, MainWindowDesign.Ui_MainWindow):
                 break
         sensors_file.close()
 
-
-        rpy_file = open(path + '/dane_RPY_ZYRO.csv', 'w')
-        csv_rpy_file = csv.writer(rpy_file)
-        csv_rpy_file.writerows(dane_imu)
-        rpy_file.close()
-        print 'Utworzone plik dane_RPY_ZYRO.csv'
-
-
         dane = []
         ins_file = open(path + '/gps/ins.csv', 'w')
         csv_ins_file = csv.writer(ins_file)
@@ -548,11 +533,6 @@ class Application(QtGui.QMainWindow, MainWindowDesign.Ui_MainWindow):
         print 'Ilość pozycji z GPS:'
         print len(dane_gps)
 
-        gsp_file = open(path + '/dane_GPS.csv', 'w')
-        csv_gps_file = csv.writer(gsp_file)
-        csv_gps_file.writerows(dane_gps)
-        gsp_file.close()
-        print 'Utworzono plik dane_GPS.csv'
 
         dane_time = []
         dane_time_only = []
@@ -564,6 +544,7 @@ class Application(QtGui.QMainWindow, MainWindowDesign.Ui_MainWindow):
         csv_time_file.writerows(dane_time)
         time_file.close()
         print "Utworzono plik lms_front.timestamps"
+
 
         start = False
         i = 0
@@ -594,11 +575,7 @@ class Application(QtGui.QMainWindow, MainWindowDesign.Ui_MainWindow):
                 dane_imu.append(rpy)
                 i = 0
             i = i + 1
-        imu_file = open(path + '/dane_RPY_AKC_MAG.csv', 'w')
-        csv_imu_file = csv.writer(imu_file)
-        csv_imu_file.writerows(dane_imu)
-        imu_file.close()
-        print 'Utworzono plik dane_RPY_AKC_MAG.csv'
+        sensors_file.close()
 
         dane = []
         ins_file = open(path + '/gps/ins.csv', 'w')
@@ -612,19 +589,18 @@ class Application(QtGui.QMainWindow, MainWindowDesign.Ui_MainWindow):
 
     # Poprawione timestampy liczą się z lidaru, a tak czyste dane z kamery
     def marek_wersja_1(self):
-
-        path = str(dir_lidar_data)
+        path = os.path.split(str(dir_lidar_data_custom))[0]     ### ścieżka w Custom do danych z lidaru (nieobrobionych)
         dane_xyz = []
         dane_time = []
         dane_imu = []
-        sensors_file = open(path + '/vo_poses9_2.csv', 'r')
+        sensors_file = open(dir_lidar_data, 'r')        ### w okienku testowym podaj ścieżkę do trajektori vo
         for line in sensors_file:
             try:
                 vector = [float(x) for x in line.split(',')[0:13]]
                 roll = np.arctan2(vector[11], vector[12])
                 pitch = np.arcsin(-vector[10])
                 yaw = np.arctan2(vector[7], vector[4])
-                dane_xyz.append([vector[1], vector[2], vector[3]])
+                dane_xyz.append([vector[3], vector[1], vector[2]])
                 dane_imu.append([yaw, roll, pitch])
             except:
                 pass
@@ -634,187 +610,6 @@ class Application(QtGui.QMainWindow, MainWindowDesign.Ui_MainWindow):
         print 'Ilość pozycji XYZ:'
         print len(dane_xyz)
 
-        gsp_file = open(path + '/dane_XYZ.csv', 'w')
-        csv_gps_file = csv.writer(gsp_file)
-        csv_gps_file.writerows(dane_xyz)
-        gsp_file.close()
-        print 'Utworzono plik dane_XYZ.csv'
-
-
-        pierwsza_wartosc = True
-        time_file = open(path + '/dane_z_lidaru.csv', 'r')
-        for line in time_file:
-            dane_time.append(float(line.split(',')[0]))
-            if pierwsza_wartosc == True:
-                odjemnik = line.split(',')[0]
-                pierwsza_wartosc = False
-        for i in range(len(dane_time)):
-            dane_time[i] = [int(dane_time[i] - float(odjemnik))]
-
-        time_file = open(dir_lidar_data + '/lms_front.timestamps', 'w')
-        csv_time_file = csv.writer(time_file)
-        csv_time_file.writerows(dane_time)
-        time_file.close()
-        print "Utworzono plik lms_front.timestamps"
-
-
-        imu_file = open(path + '/dane_vo.csv', 'w')
-        csv_imu_file = csv.writer(imu_file)
-        csv_imu_file.writerows(dane_imu)
-        imu_file.close()
-        print 'Utworzono plik dane_vo.csv'
-
-
-        dane = []
-        ins_file = open(path + '/gps/ins.csv', 'w')
-        csv_ins_file = csv.writer(ins_file)
-        if len(dane_xyz) >= dane_time:
-            t = len(dane_time)
-        else:
-            t = len(dane_xyz)
-        for i in range(0, t, 1):
-            dane.append(dane_time[i] + dane_xyz[i] + dane_imu[i])
-        csv_ins_file.writerows(dane)
-        ins_file.close()
-        print 'Utworzone plik ins.csv'
-
-
-    # Wersja 2 jest podobna do 1, zmienione tylko że linspacem żeby było więcej danych z pozycji bez interpolacji
-    def marek_wersja_2(self):
-        path = str(dir_lidar_data)
-        dane_xyz = []
-        dane_time = []
-        dane_imu = []
-
-        sensors_file = open(path + '/vo_poses9_1.csv', 'r')
-        for line in sensors_file:
-            try:
-                vector = [float(x) for x in line.split(',')[0:13]]
-                roll = np.arctan2(vector[11], vector[12])
-                pitch = np.arcsin(-vector[10])
-                yaw = np.arctan2(vector[7], vector[4])
-                next_data = [vector[3], vector[1]]
-            except:
-                pass
-            try:
-                x = np.linspace(last_data[0], next_data[0], 3)
-                y = np.linspace(last_data[1], next_data[1], 3)
-                for j in range(0, 3, 1):
-                    xyz = [x[j], y[j], 0]
-                    dane_xyz.append(xyz)
-                    dane_imu.append([yaw, roll, pitch])
-            except:
-                pass
-            try:
-                last_data = next_data
-            except:
-                pass
-        if len(dane_xyz) == 0:
-            raise ValueError("No GPS data found")
-        sensors_file.close()
-        print 'Ilość pozycji XYZ:'
-        print len(dane_xyz)
-
-        gsp_file = open(path + '/dane_XYZ.csv', 'w')
-        csv_gps_file = csv.writer(gsp_file)
-        csv_gps_file.writerows(dane_xyz)
-        gsp_file.close()
-        print 'Utworzono plik dane_XYZ.csv'
-
-
-        pierwsza_wartosc = True
-        time_file = open(path + '/dane_z_lidaru.csv', 'r')
-        for line in time_file:
-            dane_time.append(float(line.split(',')[0]))
-            if pierwsza_wartosc == True:
-                odjemnik = line.split(',')[0]
-                pierwsza_wartosc = False
-        for i in range(len(dane_time)):
-            dane_time[i] = [int(dane_time[i] - float(odjemnik))]
-
-        time_file = open(dir_lidar_data + '/lms_front.timestamps', 'w')
-        csv_time_file = csv.writer(time_file)
-        csv_time_file.writerows(dane_time)
-        time_file.close()
-        print "Utworzono plik lms_front.timestamps"
-
-
-
-        imu_file = open(path + '/dane_vo.csv', 'w')
-        csv_imu_file = csv.writer(imu_file)
-        csv_imu_file.writerows(dane_imu)
-        imu_file.close()
-        print 'Utworzono plik dane_vo.csv'
-
-
-        dane = []
-        ins_file = open(path + '/gps/ins.csv', 'w')
-        csv_ins_file = csv.writer(ins_file)
-        if len(dane_xyz) >= dane_time:
-            t = len(dane_time)
-        else:
-            t = len(dane_xyz)
-        for i in range(0, t, 1):
-            dane.append(dane_time[i] + dane_xyz[i] + dane_imu[i])
-        csv_ins_file.writerows(dane)
-        ins_file.close()
-        print 'Utworzone plik ins.csv'
-
-
-#SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS
-#SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS
-#SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS
-
-    # Funkcja do wyświetlania, testowania czegokolwiek uruchamiana guzikiem "Testy"
-    def do_testowania(self):
-
-        path = os.path.split(str(dir_lidar_data_custom))[0]
-        dane_xyz = []
-        dane_time = []
-        dane_imu = []
-        sensors_file = open(str(dir_lidar_data), 'r')
-        for line in sensors_file:
-            try:
-                vector = [float(x) for x in line.split(',')[0:13]]
-                roll = np.arctan2(vector[11], vector[12])
-                pitch = np.arcsin(-vector[10])
-                yaw = np.arctan2(vector[7], vector[4])
-                next_data = [vector[3], vector[1]]
-            except:
-                pass
-            try:
-                x = np.linspace(last_data[0], next_data[0], 3)
-                y = np.linspace(last_data[1], next_data[1], 3)
-                for j in range(0, 3, 1):
-                    xyz = [x[j], y[j], 0]
-                    dane_xyz.append(xyz)
-                    dane_imu.append([yaw, roll, pitch])
-            except:
-                pass
-            try:
-                last_data = next_data
-            except:
-                pass
-        if len(dane_xyz) == 0:
-            raise ValueError("No GPS data found")
-        sensors_file.close()
-        print 'Ilość pozycji XYZ:'
-        print len(dane_xyz)
-
-
-        gsp_file = open(path + '/dane_XYZ.csv', 'w')
-        csv_gps_file = csv.writer(gsp_file)
-        csv_gps_file.writerows(dane_xyz)
-        gsp_file.close()
-        print 'Utworzono plik dane_XYZ.csv'
-
-        imu_file = open(path + '/dane_vo.csv', 'w')
-        csv_imu_file = csv.writer(imu_file)
-        csv_imu_file.writerows(dane_imu)
-        imu_file.close()
-        print 'Utworzono plik dane_vo.csv'
-
-
         pierwsza_wartosc = True
         time_file = open(str(dir_lidar_data_custom), 'r')
         for line in time_file:
@@ -823,14 +618,12 @@ class Application(QtGui.QMainWindow, MainWindowDesign.Ui_MainWindow):
                 odjemnik = line.split(',')[0]
                 pierwsza_wartosc = False
         for i in range(len(dane_time)):
-            dane_time[i] = [int(dane_time[i] - float(odjemnik))] + [' 1']
-
+            dane_time[i] = [int(dane_time[i] - float(odjemnik))]
         time_file = open(path + '/plik.timestamps', 'w')
         csv_time_file = csv.writer(time_file)
         csv_time_file.writerows(dane_time)
         time_file.close()
         print "Utworzono plik.timestamps"
-
 
         dane = []
         ins_file = open(path + '/ins.csv', 'w')
@@ -845,6 +638,78 @@ class Application(QtGui.QMainWindow, MainWindowDesign.Ui_MainWindow):
         ins_file.close()
         print 'Utworzone plik ins.csv'
 
+    # Wersja 2 jest podobna do 1, zmienione tylko że linspacem żeby było więcej danych z pozycji bez interpolacji
+    def marek_wersja_2(self):
+        path = os.path.split(str(dir_lidar_data_custom))[0]
+        dane_xyz = []
+        dane_time = []
+        dane_imu = []
+        sensors_file = open(str(dir_lidar_data), 'r')  # w okienku testowym podaj ścieżkę do pliku z trajektoriami vo
+        for line in sensors_file:
+            try:
+                vector = [float(x) for x in line.split(',')[0:13]]
+                roll = np.arctan2(vector[11], vector[12])
+                pitch = np.arcsin(-vector[10])
+                yaw = np.arctan2(vector[7], vector[4])
+                next_data = [vector[3], vector[1]]
+            except:
+                pass
+            try:
+                x = np.linspace(last_data[0], next_data[0], 3)
+                y = np.linspace(last_data[1], next_data[1], 3)
+                for j in range(0, 3, 1):
+                    xyz = [x[j], y[j], 0]
+                    dane_xyz.append(xyz)
+                    dane_imu.append([yaw, roll, pitch])
+            except:
+                pass
+            try:
+                last_data = next_data
+            except:
+                pass
+        if len(dane_xyz) == 0:
+            raise ValueError("No GPS data found")
+        sensors_file.close()
+        print 'Ilość pozycji XYZ:'
+        print len(dane_xyz)
+
+        pierwsza_wartosc = True
+        time_file = open(str(dir_lidar_data_custom), 'r')
+        for line in time_file:
+            dane_time.append(float(line.split(',')[0]))
+            if pierwsza_wartosc == True:
+                odjemnik = line.split(',')[0]
+                pierwsza_wartosc = False
+        for i in range(len(dane_time)):
+            dane_time[i] = [int(dane_time[i] - float(odjemnik))]
+        time_file = open(path + '/plik.timestamps', 'w')
+        csv_time_file = csv.writer(time_file)
+        csv_time_file.writerows(dane_time)
+        time_file.close()
+        print "Utworzono plik.timestamps"
+
+        dane = []
+        ins_file = open(path + '/ins.csv', 'w')
+        csv_ins_file = csv.writer(ins_file)
+        if len(dane_xyz) >= dane_time:
+            t = len(dane_time)
+        else:
+            t = len(dane_xyz)
+        for i in range(0, t, 1):
+            dane.append(dane_time[i] + dane_xyz[i] + dane_imu[i])
+        csv_ins_file.writerows(dane)
+        ins_file.close()
+        print 'Utworzone plik ins.csv'
+
+
+
+#SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS
+#SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS
+#SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS
+
+    # Funkcja do wyświetlania, testowania czegokolwiek uruchamiana guzikiem "Testy"
+    def do_testowania(self):
+        u=7
 
 
     def build_pointcloud(self):

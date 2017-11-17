@@ -58,7 +58,7 @@ def build_pointcloud(lidar_dir, poses_file, extrinsics_dir, start_time, end_time
     with open(timestamps_path) as timestamps_file:
         for line in timestamps_file:
             try:
-                timestamp = int(line.split(',')[0])
+                timestamp = int(line.split('\n\r')[0])
             except:
                 timestamp = int(line.split(' ')[0])
             if start_time <= timestamp <= end_time:
@@ -133,6 +133,7 @@ def build_pointcloud(lidar_dir, poses_file, extrinsics_dir, start_time, end_time
         lidar_data_file.close()
 
         dane_odleglosci_path = os.path.split(lidar_dir)[0] + '/dane_odleglosci_lidar.csv'
+        print dane_odleglosci_path
         f = open(dane_odleglosci_path, 'w')
         f_csv = csv.writer(f)
         f_csv.writerows(dane_lidar)
