@@ -1,16 +1,16 @@
 /home/ukito/Documents/inzynierka/sample
 /home/ukito/Documents/inzynierka/robotcar-dataset-sdk-2.0.1/extrinsics
 /home/ukito/Documents/inzynierka/robotcar-dataset-sdk-2.0.1/models
-/media/ukito/Data1/Studia/inzynierka/Dane_pomiarowe/Przejazd_9_dwor_pion/poses/vo_poses3.csv
+
 3
 1
 1
 0
 2500
-/media/ukito/Data1/Studia/inzynierka/Dane_pomiarowe/Przejazd_9_dwor_pion/lidar/dane_z_lidaru.csv
+/media/ukito/Data1/Studia/inzynierka/Dane_pomiarowe/Przejazd_9_dwor_pion/dane_z_lidaru_pelne.csv
 /media/ukito/Data1/Studia/inzynierka/Dane_pomiarowe/lidar_pion_extr.txt
-/media/ukito/Data1/Studia/inzynierka/Dane_pomiarowe/Przejazd_9_dwor_pion/lidar/ins.csv
-/media/ukito/Data1/Studia/inzynierka/Dane_pomiarowe/camera_extr.txt
+/media/ukito/Data1/Studia/inzynierka/Dane_pomiarowe/Przejazd_9_dwor_pion/imu/sensors.csv
+/media/ukito/Data1/Studia/inzynierka/Dane_pomiarowe/imu_extr.txt
 
 
 1

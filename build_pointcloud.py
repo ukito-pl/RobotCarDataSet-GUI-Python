@@ -17,7 +17,7 @@ import os
 import re
 import numpy as np
 import csv
-from transform import build_se3_transform
+from transform import *
 
 from interpolate_poses import interpolate_vo_poses, interpolate_ins_poses
 import pydevd
@@ -128,17 +128,18 @@ def build_pointcloud(lidar_dir, poses_file, extrinsics_dir, start_time, end_time
         with open(os.path.join(extrinsics_dir)) as lidar_extr_file:
             lidar_extrinsics = next(lidar_extr_file)
             G_posesource_laser = build_se3_transform([float(x) for x in lidar_extrinsics.split(' ')])
+            lidar_extr_matr = build_se3_transform([float(x) for x in lidar_extrinsics.split(' ')])
 
+        with open(os.path.join(extr_pose)) as pose_extr_file:
+            pose_extrinsics = next(pose_extr_file)
+            pose_extr_matr = build_se3_transform([float(x) for x in pose_extrinsics.split(' ')])
+            G_posesource_laser = np.linalg.solve(build_se3_transform([float(x) for x in pose_extrinsics.split(' ')]),
+                                                G_posesource_laser)
 
-        with open(os.path.join(extr_pose)) as camera_extr_file:
-            camera_extrinsics = next(camera_extr_file)
-            camera_pose = build_se3_transform([float(x) for x in camera_extrinsics.split(' ')])
-            G_posesource_laser = np.linalg.solve(build_se3_transform([float(x) for x in camera_extrinsics.split(' ')]),
-                                                 G_posesource_laser)
+        #pydevd.settrace()
 
-        timestamps_path = os.path.split(lidar_dir)[0] + '/plik.timestamps'
         timestamps = []
-        with open(timestamps_path) as timestamps_file:
+        with open('plik.timestamps') as timestamps_file:
             for line in timestamps_file:
                 try:
                     timestamp = int(line.split('\n\r')[0])
@@ -146,7 +147,7 @@ def build_pointcloud(lidar_dir, poses_file, extrinsics_dir, start_time, end_time
                     timestamp = int(line.split(' ')[0])
                 if start_time <= timestamp <= end_time:
                     timestamps.append(timestamp)
-        poses = interpolate_ins_poses(poses_file, timestamps, origin_time, pose_kind)
+        poses = interpolate_ins_poses('ins.csv', timestamps, origin_time, pose_kind)
 
         dane_lidar = []
         lidar_data_file = open(lidar_dir, 'r')
@@ -158,44 +159,48 @@ def build_pointcloud(lidar_dir, poses_file, extrinsics_dir, start_time, end_time
                 pass
         lidar_data_file.close()
 
-        dane_odleglosci_path = os.path.split(lidar_dir)[0] + '/dane_odleglosci_lidar.csv'
-        print dane_odleglosci_path
-        f = open(dane_odleglosci_path, 'w')
+        #pydevd.settrace()
+
+
+        f = open('dane_odleglosci_lidar.csv', 'w')
         f_csv = csv.writer(f)
         f_csv.writerows(dane_lidar)
         f.close()
 
         print len(dane_lidar)  # kontrolne
 
-        pointcloud = np.array([[0], [0], [0], [0]])
+        pointcloud = np.array([[0], [0], [0]])
         reflectance = np.empty((0))
-        i = 0  # kontrolne
-        lidar_data_file = open(dane_odleglosci_path, 'r')
+        i = 0
+        lidar_data_file = open('dane_odleglosci_lidar.csv', 'r')
         for line in lidar_data_file:
             if i < poses.__len__():
                 dane_pointcloud = []
                 j = -45
                 for x in line.split(','):
                     s = np.pi / 180 * j
-                    a = float(x) * np.sin(s)
-                    b = float(x) * np.cos(s)
+                    a = float(x) * np.cos(s)
+                    b = float(x) * np.sin(s)
                     j = j + 1
-                    one_point = [-a] + [b] + [0]
+                    one_point = [a] + [-b] + [0]
                     dane_pointcloud.append(one_point)
                 dane_pointcloud = np.array(dane_pointcloud)
                 scan = dane_pointcloud.transpose()
 
                 reflectance = np.concatenate((reflectance, np.ravel(scan[2, :])))
                 scan[2, :] = np.zeros((1, scan.shape[1]))
-                #pydevd.settrace()
-                scan = np.dot(scan.transpose(), G_posesource_laser[0:3, 0:3])
-                scan = scan.transpose()
-                scan = np.dot(np.dot( camera_pose, poses[i] ), np.vstack([scan, np.ones((1, scan.shape[1]))]))
-                #scan = np.dot(np.dot(poses[i],G_posesource_laser), np.vstack([scan, np.ones((1, scan.shape[1]))]))
-                #print poses[i]
-                pointcloud = np.hstack([pointcloud, scan])
-                i = i + 1  # kontrolne
 
+                #teoretycznie przy dobrych extrinsicsach ta linijka powinna załatwić całą zabawę z układami współrzędnych, ale ...
+                scan = np.dot(np.dot(poses[i], G_posesource_laser), np.vstack([scan, np.ones((1, scan.shape[1]))]))
+
+                pointcloud = np.hstack([pointcloud, scan[0:3]])
+
+                i = i + 1
+        #...przy pozycjach z vo trzeba jeszcze obrócić(nie wiem dlaczego):
+        if pose_kind == 2:
+            pointcloud = np.dot(pointcloud.transpose(),euler_to_so3([1.57,0,0]))
+            pointcloud = pointcloud.transpose()
+        # w ogóle końcowy układ współrzędnych nie jest taki jaki powinien być ale już walić to, tak jak jest przynajmniej wyświetla dobrze
         print len(poses)
         pointcloud = pointcloud[:, 1:]
         if pointcloud.shape[1] == 0:

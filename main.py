@@ -56,6 +56,7 @@ class SelectDataWindow(QtGui.QDialog, SelectDataWindowDesign.Ui_Dialog):
         global dir_lidar_data_custom, dir_lidar_extr, dir_lidar_synch, dir_pose_data, dir_pose_extr, pose_kind
         global clear_h, dir_pose_synch, start_time_custom, end_time_custom
 
+
         dir_data_f = self.chooseDataFolder.text()
         dir_extr_f = self.chooseExtrFolder.text()
         dir_models_f = self.chooseModelsFolder.text()
@@ -251,9 +252,12 @@ class Application(QtGui.QMainWindow, MainWindowDesign.Ui_MainWindow):
         self.settingButton.clicked.connect(self.open_settings)
         self.testyButton.clicked.connect(self.do_testowania)
 
+
+
     def open_select_data(self):
         self.dialog = SelectDataWindow()
         self.dialog.show()
+
 
     def open_settings(self):
         self.dialog = SettingsWindow()
@@ -492,7 +496,7 @@ class Application(QtGui.QMainWindow, MainWindowDesign.Ui_MainWindow):
 
         path = str(dir_lidar_data)
         dane_gps = []
-        sensors_file = open(path + '/sensors.csv', 'r')
+        sensors_file = open(dir_pose_data, 'r')
         for line in sensors_file:
             id = line.split(',')[1]
             if int(id) == 1:
@@ -533,24 +537,22 @@ class Application(QtGui.QMainWindow, MainWindowDesign.Ui_MainWindow):
         print 'Ilość pozycji z GPS:'
         print len(dane_gps)
 
-
         dane_time = []
         dane_time_only = []
-        time_file = open(dir_lidar_data + '/lms_front.timestamps', 'w')
+        time_file = open('plik.timestamps', 'w')
         csv_time_file = csv.writer(time_file)
         for i in range(0, len(dane_gps), 1):
             dane_time.append([str(i * 66666 + 1000000) + ' 1'])
             dane_time_only.append([i * 66666 + 100000])
         csv_time_file.writerows(dane_time)
         time_file.close()
-        print "Utworzono plik lms_front.timestamps"
-
+        print "Utworzono plik plik.timestamps"
 
         start = False
         i = 0
         path = dir_lidar_data
         dane_imu = []
-        sensors_file = open(path + '/sensors.csv', 'r')
+        sensors_file = open(dir_pose_data, 'r')
         for line in sensors_file:
             id = line.split(',')[1]
             if int(id) == 1:
@@ -561,7 +563,7 @@ class Application(QtGui.QMainWindow, MainWindowDesign.Ui_MainWindow):
                 yaw = np.arctan2((sin(roll) * imu[5] - cos(roll) * (-imu[3])),
                                  (cos(pitch) * (-imu[4]) + sin(roll) * sin(pitch) * (-imu[3])) +
                                  cos(roll) * sin(pitch) * imu[5])
-                rpy = [roll, pitch, yaw]
+                rpy = [roll * pi / 180, pitch * pi / 180, yaw * pi / 180]
                 dane_imu.append(rpy)
             if start == True and i >= 3 and int(id) != 1 and line.split(',')[10:13] != [] and line.split(',')[
                                                                                               10:13] != ['', '', '']:
@@ -571,14 +573,14 @@ class Application(QtGui.QMainWindow, MainWindowDesign.Ui_MainWindow):
                 yaw = np.arctan2((sin(roll) * imu[5] - cos(roll) * (-imu[3])),
                                  (cos(pitch) * (-imu[4]) + sin(roll) * sin(pitch) * (-imu[3])) +
                                  cos(roll) * sin(pitch) * imu[5])
-                rpy = [roll ,pitch, yaw]
+                rpy = [roll * pi / 180, pitch * pi / 180, yaw * pi / 180]
                 dane_imu.append(rpy)
                 i = 0
             i = i + 1
         sensors_file.close()
 
         dane = []
-        ins_file = open(path + '/gps/ins.csv', 'w')
+        ins_file = open('ins.csv', 'w')
         csv_ins_file = csv.writer(ins_file)
         for i in range(0, len(dane_time), 1):
             dane.append(dane_time_only[i] + dane_gps[i] + dane_imu[i])
@@ -593,7 +595,7 @@ class Application(QtGui.QMainWindow, MainWindowDesign.Ui_MainWindow):
         dane_xyz = []
         dane_time = []
         dane_imu = []
-        sensors_file = open(dir_lidar_data, 'r')  ### w okienku testowym podaj ścieżkę do trajektori vo
+        sensors_file = open(dir_pose_data, 'r')  ##ścieżka do pliku vo
         for line in sensors_file:
             try:
                 vector = [float(x) for x in line.split(',')[0:13]]
@@ -604,12 +606,12 @@ class Application(QtGui.QMainWindow, MainWindowDesign.Ui_MainWindow):
                 roll = np.arctan2(vector[11], vector[12])
                 pitch = np.arcsin(-vector[10])
                 yaw = np.arctan2(vector[7], vector[4])
-                dane_xyz.append([-vector[1], -vector[2], vector[3]])
-                dane_imu.append([rpy[0, 0], rpy[0, 1], rpy[0, 2]])
+                dane_xyz.append([vector[1], 0, vector[3]])
+                dane_imu.append([0, rpy[0, 1], 0])
             except:
                 pass
         if len(dane_xyz) == 0:
-            raise ValueError("No GPS data found")
+            raise ValueError("No VO data found")
         sensors_file.close()
         print 'Ilość pozycji XYZ:'
         print len(dane_xyz)
@@ -623,14 +625,15 @@ class Application(QtGui.QMainWindow, MainWindowDesign.Ui_MainWindow):
                 pierwsza_wartosc = False
         for i in range(len(dane_time)):
             dane_time[i] = [int(dane_time[i] - float(odjemnik))]
-        time_file = open(path + '/plik.timestamps', 'w')
+
+        time_file = open('plik.timestamps', 'w')
         csv_time_file = csv.writer(time_file)
         csv_time_file.writerows(dane_time)
         time_file.close()
         print "Utworzono plik.timestamps"
 
         dane = []
-        ins_file = open(path + '/ins.csv', 'w')
+        ins_file = open('ins.csv', 'w')
         csv_ins_file = csv.writer(ins_file)
         if len(dane_xyz) >= dane_time:
             t = len(dane_time)
@@ -659,7 +662,7 @@ class Application(QtGui.QMainWindow, MainWindowDesign.Ui_MainWindow):
                 pitch = rpy[0, 1]
                 yaw = rpy[0, 2]
 
-                next_data = [-vector[1], 0, vector[3]]
+                next_data = [vector[1], 0, vector[3]]
             except:
                 pass
             try:
@@ -710,7 +713,57 @@ class Application(QtGui.QMainWindow, MainWindowDesign.Ui_MainWindow):
         ins_file.close()
         print 'Utworzone plik ins.csv'
 
+    def test_ukl_wsp_scanu_lidaru(self):
+        dane_lidar = []
+        lidar_data_file = open(str(dir_lidar_data_custom), 'r')
+        for line in lidar_data_file:
+            try:
+                one_scan = [float(x) for x in line.split(',')[11:282]]
+                dane_lidar.append(one_scan)
+            except:
+                pass
+        lidar_data_file.close()
 
+        dane_odleglosci_path = os.path.split(str(dir_lidar_data_custom))[0] + '/dane_odleglosci_lidar.csv'
+        print dane_odleglosci_path
+        f = open(dane_odleglosci_path, 'w')
+        f_csv = csv.writer(f)
+        f_csv.writerows(dane_lidar)
+        f.close()
+        lidar_data_file = open(dane_odleglosci_path, 'r')
+        i = 0
+        for line in lidar_data_file:
+            if i < 1:
+                dane_pointcloud = []
+                j = -45
+                for x in line.split(','):
+                    s = np.pi / 180 * j
+                    a = float(x) * np.cos(s)
+                    b = float(x) * np.sin(s)
+                    j = j + 1
+                    one_point = [a] + [b] + [0]
+                    dane_pointcloud.append(one_point)
+                dane_pointcloud = np.array(dane_pointcloud)
+                scan = dane_pointcloud.transpose()
+                scan = scan.transpose()
+                plot_item = gl.GLScatterPlotItem(pos=scan, size=1, color=[0.7, 0.7, 0.7, 1], pxMode=True)
+                self.pointcloudArea.addItem(plot_item)
+                i = i + 1
+
+        ukl_wsp_line_length = 3
+        ukl_wsp_line_width = 4
+        ukl_wsp_x = gl.GLLinePlotItem(pos=np.array([[0, 0, 0], [ukl_wsp_line_length, 0, 0]]), color=[1, 0, 0, 1],
+                                      width=ukl_wsp_line_width,
+                                      antialias=True, mode='lines')
+        ukl_wsp_y = gl.GLLinePlotItem(pos=np.array([[0, 0, 0], [0, ukl_wsp_line_length, 0]]), color=[0, 1, 0, 1],
+                                      width=ukl_wsp_line_width,
+                                      antialias=True, mode='lines')
+        ukl_wsp_z = gl.GLLinePlotItem(pos=np.array([[0, 0, 0], [0, 0, ukl_wsp_line_length]]), color=[0, 0, 1, 1],
+                                      width=ukl_wsp_line_width,
+                                      antialias=True, mode='lines')
+        self.pointcloudArea.addItem(ukl_wsp_x)
+        self.pointcloudArea.addItem(ukl_wsp_y)
+        self.pointcloudArea.addItem(ukl_wsp_z)
 
 #SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS
 #SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS
@@ -718,9 +771,15 @@ class Application(QtGui.QMainWindow, MainWindowDesign.Ui_MainWindow):
 
     # Funkcja do wyświetlania, testowania czegokolwiek uruchamiana guzikiem "Testy"
     def do_testowania(self):
-        self.marek_wersja_2()
+        do = 0
+
 
     def build_pointcloud(self):
+        if pose_kind == 1:
+            self.poniekad_dobrze_metoda_akcelerometr_magnetometr()
+        elif pose_kind == 2:
+            self.marek_wersja_1()
+            
         if sdk:
             self.new_thread = BuildPointcloudThread(str(dir_lidar),
                                                     str(dir_ins),
