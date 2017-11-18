@@ -20,7 +20,7 @@ import csv
 from transform import build_se3_transform
 
 from interpolate_poses import interpolate_vo_poses, interpolate_ins_poses
-#import pydevd
+import pydevd
 
 
 def build_pointcloud(lidar_dir, poses_file, extrinsics_dir, start_time, end_time, origin_time=-1, extr_pose=0, pose_kind=3):
@@ -43,61 +43,63 @@ def build_pointcloud(lidar_dir, poses_file, extrinsics_dir, start_time, end_time
         IOError: if scan files are not found.
 
     """
+
     if origin_time < 0:
         origin_time = start_time
-
-    try:
-        lidar = re.search('(lms_front|lms_rear|ldmrs)', lidar_dir).group(0)
-        timestamps_path = os.path.join(lidar_dir, os.pardir, lidar + '.timestamps')
-    except:
-        timestamps_path = os.path.split(lidar_dir)[0] + '/plik.timestamps'
-        lidar = 'lms_front'
-
-
-    timestamps = []
-    with open(timestamps_path) as timestamps_file:
-        for line in timestamps_file:
-            try:
-                timestamp = int(line.split('\n\r')[0])
-            except:
-                timestamp = int(line.split(' ')[0])
-            if start_time <= timestamp <= end_time:
-                timestamps.append(timestamp)
-
-    if len(timestamps) == 0:
-        raise ValueError("No LIDAR data in the given time bracket.")
-    print len(timestamps)
-
-    with open(os.path.join(extrinsics_dir, lidar + '.txt')) as extrinsics_file:
-        extrinsics = next(extrinsics_file)
-    G_posesource_laser = build_se3_transform([float(x) for x in extrinsics.split(' ')])
-
-    try:
-        poses_type = re.search('(vo|ins)\.csv', poses_file).group(1)
-    except:
-        if pose_kind == 2:
-            poses_type = 'vo'
-        if pose_kind == 1:
-            poses_type = 'ins'
-
-    if poses_type == 'ins':
-        with open(os.path.join(extrinsics_dir, 'ins.txt')) as extrinsics_file:
-            extrinsics = next(extrinsics_file)
-            G_posesource_laser = np.linalg.solve(build_se3_transform([float(x) for x in extrinsics.split(' ')]),
-                                                 G_posesource_laser)
-
-        poses = interpolate_ins_poses(poses_file, timestamps, origin_time, pose_kind)   #jeśli pose_kind ==3 to custom
-    else:
-        # sensor is VO, which is located at the main vehicle frame
-        poses = interpolate_vo_poses(poses_file, timestamps, origin_time)
-
-    pointcloud = np.array([[0], [0], [0], [0]])
-    if lidar == 'ldmrs':
-        reflectance = None
-    else:
-        reflectance = np.empty((0))
-
     if pose_kind == 3:
+
+        try:
+            lidar = re.search('(lms_front|lms_rear|ldmrs)', lidar_dir).group(0)
+            timestamps_path = os.path.join(lidar_dir, os.pardir, lidar + '.timestamps')
+        except:
+            timestamps_path = os.path.split(lidar_dir)[0] + '/plik.timestamps'
+            lidar = 'lms_front'
+
+
+        timestamps = []
+        with open(timestamps_path) as timestamps_file:
+            for line in timestamps_file:
+                try:
+                    timestamp = int(line.split('\n\r')[0])
+                except:
+                    timestamp = int(line.split(' ')[0])
+                if start_time <= timestamp <= end_time:
+                    timestamps.append(timestamp)
+
+        if len(timestamps) == 0:
+            raise ValueError("No LIDAR data in the given time bracket.")
+        print len(timestamps)
+
+        with open(os.path.join(extrinsics_dir, lidar + '.txt')) as extrinsics_file:
+            extrinsics = next(extrinsics_file)
+        G_posesource_laser = build_se3_transform([float(x) for x in extrinsics.split(' ')])
+
+        try:
+            poses_type = re.search('(vo|ins)\.csv', poses_file).group(1)
+        except:
+            if pose_kind == 2:
+                poses_type = 'vo'
+            if pose_kind == 1:
+                poses_type = 'ins'
+
+        if poses_type == 'ins':
+            with open(os.path.join(extrinsics_dir, 'ins.txt')) as extrinsics_file:
+                extrinsics = next(extrinsics_file)
+                G_posesource_laser = np.linalg.solve(build_se3_transform([float(x) for x in extrinsics.split(' ')]),
+                                                     G_posesource_laser)
+
+            poses = interpolate_ins_poses(poses_file, timestamps, origin_time, pose_kind)   #jeśli pose_kind ==3 to custom
+        else:
+            # sensor is VO, which is located at the main vehicle frame
+            poses = interpolate_vo_poses(poses_file, timestamps, origin_time)
+
+        pointcloud = np.array([[0], [0], [0], [0]])
+        if lidar == 'ldmrs':
+            reflectance = None
+        else:
+            reflectance = np.empty((0))
+
+    ####
         for i in range(0, len(poses)):
             scan_path = os.path.join(lidar_dir, str(timestamps[i]) + '.bin')
             if not os.path.isfile(scan_path):
@@ -122,6 +124,30 @@ def build_pointcloud(lidar_dir, poses_file, extrinsics_dir, start_time, end_time
             raise IOError("Could not find scan files for given time range in directory " + lidar_dir)
 
     else:
+
+        with open(os.path.join(extrinsics_dir)) as lidar_extr_file:
+            lidar_extrinsics = next(lidar_extr_file)
+            G_posesource_laser = build_se3_transform([float(x) for x in lidar_extrinsics.split(' ')])
+
+
+        with open(os.path.join(extr_pose)) as camera_extr_file:
+            camera_extrinsics = next(camera_extr_file)
+            camera_pose = build_se3_transform([float(x) for x in camera_extrinsics.split(' ')])
+            G_posesource_laser = np.linalg.solve(build_se3_transform([float(x) for x in camera_extrinsics.split(' ')]),
+                                                 G_posesource_laser)
+
+        timestamps_path = os.path.split(lidar_dir)[0] + '/plik.timestamps'
+        timestamps = []
+        with open(timestamps_path) as timestamps_file:
+            for line in timestamps_file:
+                try:
+                    timestamp = int(line.split('\n\r')[0])
+                except:
+                    timestamp = int(line.split(' ')[0])
+                if start_time <= timestamp <= end_time:
+                    timestamps.append(timestamp)
+        poses = interpolate_ins_poses(poses_file, timestamps, origin_time, pose_kind)
+
         dane_lidar = []
         lidar_data_file = open(lidar_dir, 'r')
         for line in lidar_data_file:
@@ -141,30 +167,36 @@ def build_pointcloud(lidar_dir, poses_file, extrinsics_dir, start_time, end_time
 
         print len(dane_lidar)  # kontrolne
 
+        pointcloud = np.array([[0], [0], [0], [0]])
+        reflectance = np.empty((0))
         i = 0  # kontrolne
         lidar_data_file = open(dane_odleglosci_path, 'r')
         for line in lidar_data_file:
-            dane_pointcloud = []
-            j = -45
-            for x in line.split(','):
-                s = np.pi / 180 * j
-                a = float(x) * np.sin(s)
-                b = float(x) * np.cos(s)
-                j = j + 1
-                one_point = [a] + [b] + [100]
-                dane_pointcloud.append(one_point)
-            dane_pointcloud = np.array(dane_pointcloud)
-            scan = dane_pointcloud.transpose()
+            if i < poses.__len__():
+                dane_pointcloud = []
+                j = -45
+                for x in line.split(','):
+                    s = np.pi / 180 * j
+                    a = float(x) * np.sin(s)
+                    b = float(x) * np.cos(s)
+                    j = j + 1
+                    one_point = [-a] + [b] + [0]
+                    dane_pointcloud.append(one_point)
+                dane_pointcloud = np.array(dane_pointcloud)
+                scan = dane_pointcloud.transpose()
 
-            if lidar != 'ldmrs':
-                # LMS scans are tuples of (x, y, reflectance)
                 reflectance = np.concatenate((reflectance, np.ravel(scan[2, :])))
                 scan[2, :] = np.zeros((1, scan.shape[1]))
+                #pydevd.settrace()
+                scan = np.dot(scan.transpose(), G_posesource_laser[0:3, 0:3])
+                scan = scan.transpose()
+                scan = np.dot(np.dot( camera_pose, poses[i] ), np.vstack([scan, np.ones((1, scan.shape[1]))]))
+                #scan = np.dot(np.dot(poses[i],G_posesource_laser), np.vstack([scan, np.ones((1, scan.shape[1]))]))
+                #print poses[i]
+                pointcloud = np.hstack([pointcloud, scan])
+                i = i + 1  # kontrolne
 
-            scan = np.dot(np.dot(poses[i], G_posesource_laser), np.vstack([scan, np.ones((1, scan.shape[1]))]))
-            pointcloud = np.hstack([pointcloud, scan])
-            i = i + 1  # kontrolne
-
+        print len(poses)
         pointcloud = pointcloud[:, 1:]
         if pointcloud.shape[1] == 0:
             raise IOError("Could not find scan files for given time range in directory " + lidar_dir)

@@ -13,7 +13,7 @@ import numpy as np
 from Tkinter import *
 import csv
 from math import sin, cos, atanh, asinh, sqrt, pi, tan, sinh, atan, cosh
-import numpy.matlib as ml
+from transform import so3_to_euler
 
 
 
@@ -589,19 +589,23 @@ class Application(QtGui.QMainWindow, MainWindowDesign.Ui_MainWindow):
 
     # Poprawione timestampy liczą się z lidaru, a tak czyste dane z kamery
     def marek_wersja_1(self):
-        path = os.path.split(str(dir_lidar_data_custom))[0]     ### ścieżka w Custom do danych z lidaru (nieobrobionych)
+        path = os.path.split(str(dir_lidar_data_custom))[0]  ### ścieżka w Custom do danych z lidaru (nieobrobionych)
         dane_xyz = []
         dane_time = []
         dane_imu = []
-        sensors_file = open(dir_lidar_data, 'r')        ### w okienku testowym podaj ścieżkę do trajektori vo
+        sensors_file = open(dir_lidar_data, 'r')  ### w okienku testowym podaj ścieżkę do trajektori vo
         for line in sensors_file:
             try:
                 vector = [float(x) for x in line.split(',')[0:13]]
+                macierzR = np.matrix([vector[4:7], vector[7:10], vector[10:13]])
+                print macierzR
+                rpy = so3_to_euler(macierzR)
+
                 roll = np.arctan2(vector[11], vector[12])
                 pitch = np.arcsin(-vector[10])
                 yaw = np.arctan2(vector[7], vector[4])
-                dane_xyz.append([vector[3], vector[1], vector[2]])
-                dane_imu.append([yaw, roll, pitch])
+                dane_xyz.append([-vector[1], -vector[2], vector[3]])
+                dane_imu.append([rpy[0, 0], rpy[0, 1], rpy[0, 2]])
             except:
                 pass
         if len(dane_xyz) == 0:
@@ -648,19 +652,24 @@ class Application(QtGui.QMainWindow, MainWindowDesign.Ui_MainWindow):
         for line in sensors_file:
             try:
                 vector = [float(x) for x in line.split(',')[0:13]]
-                roll = np.arctan2(vector[11], vector[12])
-                pitch = np.arcsin(-vector[10])
-                yaw = np.arctan2(vector[7], vector[4])
-                next_data = [vector[3], vector[1]]
+                macierzR = np.matrix([vector[4:7], vector[7:10], vector[10:13]])
+
+                rpy = so3_to_euler(macierzR)
+                roll = rpy[0, 0]
+                pitch = rpy[0, 1]
+                yaw = rpy[0, 2]
+
+                next_data = [-vector[1], 0, vector[3]]
             except:
                 pass
             try:
                 x = np.linspace(last_data[0], next_data[0], 3)
                 y = np.linspace(last_data[1], next_data[1], 3)
+                z = np.linspace(last_data[2], next_data[2], 3)
                 for j in range(0, 3, 1):
-                    xyz = [x[j], y[j], 0]
+                    xyz = [x[j], y[j], z[j]]
                     dane_xyz.append(xyz)
-                    dane_imu.append([yaw, roll, pitch])
+                    dane_imu.append([0, 0, yaw])
             except:
                 pass
             try:
@@ -709,8 +718,7 @@ class Application(QtGui.QMainWindow, MainWindowDesign.Ui_MainWindow):
 
     # Funkcja do wyświetlania, testowania czegokolwiek uruchamiana guzikiem "Testy"
     def do_testowania(self):
-        u=7
-
+        self.marek_wersja_2()
 
     def build_pointcloud(self):
         if sdk:
@@ -736,14 +744,25 @@ class Application(QtGui.QMainWindow, MainWindowDesign.Ui_MainWindow):
         pointcloud = np.array(-pointcloud)
 
         plot_item = gl.GLScatterPlotItem(pos=pointcloud, size=1, color=[0.7, 0.7, 0.7, 1], pxMode=True)
-        plot_item.translate(5, 5, 0)
+        #plot_item.translate(5, 5, 0)
+
         #clear pointcloud area
         if self.pointcloudArea.items.__len__() > 0:
             for i in range(0,self.pointcloudArea.items.__len__()):
-                self.pointcloudArea.items.__delitem__(i)
+                self.pointcloudArea.items.__delitem__(0)
 
         self.pointcloudArea.addItem(plot_item)
-
+        ukl_wsp_line_length = 3
+        ukl_wsp_line_width = 4
+        ukl_wsp_x = gl.GLLinePlotItem(pos = np.array([[0,0,0],[ukl_wsp_line_length,0,0]]), color=[1, 0, 0, 1], width = ukl_wsp_line_width,
+                                      antialias = True, mode='lines')
+        ukl_wsp_y = gl.GLLinePlotItem(pos=np.array([[0, 0, 0], [0, ukl_wsp_line_length, 0]]), color=[0, 1, 0, 1], width=ukl_wsp_line_width,
+                                      antialias=True, mode='lines')
+        ukl_wsp_z = gl.GLLinePlotItem(pos=np.array([[0, 0, 0], [0, 0, ukl_wsp_line_length]]), color=[0, 0, 1, 1], width=ukl_wsp_line_width,
+                                      antialias=True, mode='lines')
+        self.pointcloudArea.addItem(ukl_wsp_x)
+        self.pointcloudArea.addItem(ukl_wsp_y)
+        self.pointcloudArea.addItem(ukl_wsp_z)
         self.pointcloudButton.setEnabled(True)
         self.pointcloudButton.setText("Build and draw sample pointcloud")
 

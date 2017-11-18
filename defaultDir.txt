@@ -1,16 +1,16 @@
-/home/qahu/Documents/inz/sample
-/home/qahu/Documents/inz/robotcar-dataset-sdk-2.0.1/extrinsics
-/home/qahu/Documents/inz/robotcar-dataset-sdk-2.0.1/models
-/home/qahu/Desktop/Przejazd_9_dwor/dane_z_lidaru.csv
-1
+/home/ukito/Documents/inzynierka/sample
+/home/ukito/Documents/inzynierka/robotcar-dataset-sdk-2.0.1/extrinsics
+/home/ukito/Documents/inzynierka/robotcar-dataset-sdk-2.0.1/models
+/media/ukito/Data1/Studia/inzynierka/Dane_pomiarowe/Przejazd_9_dwor_pion/poses/vo_poses3.csv
+3
 1
 1
 0
-1000000000
-/home/qahu/Desktop/Przejazd_9_dworrr/dane_z_lidaru.csv
-/home/qahu/Desktop/extrinsics
-/home/qahu/Desktop/Przejazd_9_dworrr/ins.csv
-
+2500
+/media/ukito/Data1/Studia/inzynierka/Dane_pomiarowe/Przejazd_9_dwor_pion/lidar/dane_z_lidaru.csv
+/media/ukito/Data1/Studia/inzynierka/Dane_pomiarowe/lidar_pion_extr.txt
+/media/ukito/Data1/Studia/inzynierka/Dane_pomiarowe/Przejazd_9_dwor_pion/lidar/ins.csv
+/media/ukito/Data1/Studia/inzynierka/Dane_pomiarowe/camera_extr.txt
 
 
 1
