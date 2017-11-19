@@ -246,11 +246,18 @@ class Ui_Dialog(object):
         self.label_37 = QtGui.QLabel(self.tab_2)
         self.label_37.setGeometry(QtCore.QRect(530, 320, 61, 20))
         self.label_37.setObjectName(_fromUtf8("label_37"))
+        self.skalaVO = QtGui.QLineEdit(self.tab_2)
+        self.skalaVO.setGeometry(QtCore.QRect(500, 280, 111, 27))
+        self.skalaVO.setText(_fromUtf8(""))
+        self.skalaVO.setObjectName(_fromUtf8("skalaVO"))
+        self.label_38 = QtGui.QLabel(self.tab_2)
+        self.label_38.setGeometry(QtCore.QRect(430, 280, 91, 20))
+        self.label_38.setObjectName(_fromUtf8("label_38"))
         self.tabWidget.addTab(self.tab_2, _fromUtf8(""))
         self.horizontalLayout_2.addWidget(self.tabWidget)
 
         self.retranslateUi(Dialog)
-        self.tabWidget.setCurrentIndex(0)
+        self.tabWidget.setCurrentIndex(1)
         QtCore.QObject.connect(self.buttonBoxDataSet, QtCore.SIGNAL(_fromUtf8("accepted()")), Dialog.accept)
         QtCore.QObject.connect(self.buttonBoxDataSet, QtCore.SIGNAL(_fromUtf8("rejected()")), Dialog.reject)
         QtCore.QObject.connect(self.buttonBoxCustom, QtCore.SIGNAL(_fromUtf8("accepted()")), Dialog.accept)
@@ -306,6 +313,7 @@ class Ui_Dialog(object):
         self.label_35.setText(_translate("Dialog", "Wysokość", None))
         self.label_36.setText(_translate("Dialog", "Kąt roll", None))
         self.label_37.setText(_translate("Dialog", "Kąt pitch", None))
+        self.label_38.setText(_translate("Dialog", "Skala vo:", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), _translate("Dialog", "Dane własne", None))
 
 

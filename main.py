@@ -54,7 +54,7 @@ class SelectDataWindow(QtGui.QDialog, SelectDataWindowDesign.Ui_Dialog):
     def save_dialog1(self):
         global dir_data_f, dir_extr_f, dir_models_f, dir_lidar_data, dir_ins, dir_lidar, dir_camera, start_time, end_time
         global dir_lidar_data_custom, dir_lidar_extr, lidar_synch_time, dir_pose_data, dir_pose_extr, pose_kind
-        global clear_h, clear_roll, clear_pitch, pose_synch_time, start_time_custom, end_time_custom
+        global skala_vo, clear_h, clear_roll, clear_pitch, pose_synch_time, start_time_custom, end_time_custom
 
 
         dir_data_f = self.chooseDataFolder.text()
@@ -70,6 +70,7 @@ class SelectDataWindow(QtGui.QDialog, SelectDataWindowDesign.Ui_Dialog):
         dir_pose_data = self.choosePoseData.text()
         dir_pose_extr = self.choosePoseExtr.text()
         pose_synch_time = self.synchPoseTime.text()
+        skala_vo = self.skalaVO.text()
         start_time_custom = self.startTimeCustom.text()
         end_time_custom = self.endTimeCustom.text()
 
@@ -85,6 +86,7 @@ class SelectDataWindow(QtGui.QDialog, SelectDataWindowDesign.Ui_Dialog):
         end_time = end_time.replace('\r', "").replace('\n', "")
         lidar_synch_time = lidar_synch_time.replace('\r', "").replace('\n', "")
         pose_synch_time = pose_synch_time.replace('\r', "").replace('\n', "")
+        skala_vo = skala_vo.replace('\r', "").replace('\n', "")
         start_time_custom = start_time_custom.replace('\r', "").replace('\n', "")
         end_time_custom = end_time_custom.replace('\r', "").replace('\n', "")
 
@@ -105,7 +107,7 @@ class SelectDataWindow(QtGui.QDialog, SelectDataWindowDesign.Ui_Dialog):
                  str(self.chooseLidar.currentIndex()), "\n", str(self.chooseCamera.currentIndex()),
                  "\n", str(self.choosePoseF.currentIndex()), "\n", start_time, "\n", end_time, "\n",
                  dir_lidar_data_custom, "\n", dir_lidar_extr, "\n", dir_pose_data, "\n", dir_pose_extr, "\n",
-                 lidar_synch_time, "\n", pose_synch_time, "\n", str(pose_kind), "\n", str(clear_h),"\n", str(clear_roll),
+                 lidar_synch_time, "\n", pose_synch_time,"\n", skala_vo, "\n", str(pose_kind), "\n", str(clear_h),"\n", str(clear_roll),
                  "\n", str(clear_pitch), "\n", start_time_custom, "\n", end_time_custom]
         f.writelines(lines)
         f.close()
@@ -141,6 +143,7 @@ class SelectDataWindow(QtGui.QDialog, SelectDataWindowDesign.Ui_Dialog):
         self.choosePoseExtr.setText(f.readline())
         self.synchLidarTime.setText(f.readline())
         self.synchPoseTime.setText(f.readline())
+        self.skalaVO.setText(f.readline())
         self.choosePoseKind.setCurrentIndex(int(f.readline()))
         if f.readline().replace('\n',"") == 'True':
             self.clearHeight.setChecked(True)
@@ -607,6 +610,7 @@ class Application(QtGui.QMainWindow, MainWindowDesign.Ui_MainWindow):
 
     ###sprawdzone
     def marek_wersja_1(self):
+        skala = float(skala_vo)
         path = os.path.split(str(dir_lidar_data_custom))[0]  ### ścieżka w Custom do danych z lidaru (nieobrobionych)
         dane_xyz = []
         dane_time = []
@@ -630,7 +634,7 @@ class Application(QtGui.QMainWindow, MainWindowDesign.Ui_MainWindow):
                     rpy[0,2] = 0
                 if clear_pitch == True:
                     rpy[0,0] = 0
-                dane_xyz.append([vector[1], vector[2], vector[3]])
+                dane_xyz.append([vector[1]*skala, vector[2]*skala, vector[3]*skala])
                 dane_imu.append([rpy[0,0], rpy[0, 1], rpy[0,2]])
                 poses_times.append([vector[0]*1000000])
             except:
