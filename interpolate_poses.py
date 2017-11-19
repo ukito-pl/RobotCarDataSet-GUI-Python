@@ -17,7 +17,7 @@ import csv
 import numpy as np
 import numpy.matlib as ml
 from transform import *
-
+import pydevd
 
 def interpolate_vo_poses(vo_path, pose_timestamps, origin_timestamp):
     """Interpolate poses from visual odometry.
@@ -80,12 +80,12 @@ def interpolate_ins_poses(ins_path, pose_timestamps, origin_timestamp, czy_custo
         abs_poses = [ml.identity(4)]
 
         upper_timestamp = max(max(pose_timestamps), origin_timestamp)
-
+        #pydevd.settrace()
         for row in ins_reader:
-            timestamp = int(row[0])
+            timestamp = int(float(row[0]))
             ins_timestamps.append(timestamp)
 
-            if czy_custom != 3:
+            if czy_custom != 2:
                 xyzrpy = [float(v) for v in row[1:4]] + [float(v) for v in row[-3:]]
             else:
                 xyzrpy = [float(v) for v in row[5:8]] + [float(v) for v in row[-3:]]
@@ -118,6 +118,7 @@ def interpolate_poses(pose_timestamps, abs_poses, requested_timestamps, origin_t
         ValueError: if pose_timestamps is not in ascending order
 
     """
+
     requested_timestamps.insert(0, origin_timestamp)
     requested_timestamps = np.array(requested_timestamps)
     pose_timestamps = np.array(pose_timestamps)

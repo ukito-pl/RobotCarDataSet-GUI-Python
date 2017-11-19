@@ -66,10 +66,10 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow", None))
-        self.selectDataButton.setText(_translate("MainWindow", "Select Data", None))
-        self.pointcloudButton.setText(_translate("MainWindow", "Build and draw pointcloud", None))
+        self.selectDataButton.setText(_translate("MainWindow", "Wybierz dane", None))
+        self.pointcloudButton.setText(_translate("MainWindow", "Buduj i rysuj pointclouda", None))
         self.testyButton.setText(_translate("MainWindow", "Testy", None))
-        self.settingButton.setText(_translate("MainWindow", "View settings", None))
+        self.settingButton.setText(_translate("MainWindow", "Ustawienia widoku", None))
         self.toolBar.setWindowTitle(_translate("MainWindow", "toolBar", None))
 
 from pyqtgraph.opengl import GLViewWidget

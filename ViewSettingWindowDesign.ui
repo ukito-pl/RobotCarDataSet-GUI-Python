@@ -29,17 +29,17 @@
     <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
    </property>
   </widget>
-  <widget class="QCheckBox" name="checkBoxGrid">
+  <widget class="QCheckBox" name="checkBoxUW">
    <property name="geometry">
     <rect>
      <x>70</x>
      <y>40</y>
-     <width>99</width>
+     <width>251</width>
      <height>22</height>
     </rect>
    </property>
    <property name="text">
-    <string>Siatka</string>
+    <string>Początek układu współrzędnych</string>
    </property>
   </widget>
   <widget class="QCheckBox" name="checkBoxPixel">

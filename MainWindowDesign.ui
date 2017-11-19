@@ -18,14 +18,14 @@
     <item row="0" column="0">
      <widget class="QPushButton" name="selectDataButton">
       <property name="text">
-       <string>Select Data</string>
+       <string>Wybierz dane</string>
       </property>
      </widget>
     </item>
     <item row="1" column="0">
      <widget class="QPushButton" name="pointcloudButton">
       <property name="text">
-       <string>Build and draw pointcloud</string>
+       <string>Buduj i rysuj pointclouda</string>
       </property>
      </widget>
     </item>
@@ -39,7 +39,7 @@
     <item row="0" column="1">
      <widget class="QPushButton" name="settingButton">
       <property name="text">
-       <string>View settings</string>
+       <string>Ustawienia widoku</string>
       </property>
      </widget>
     </item>

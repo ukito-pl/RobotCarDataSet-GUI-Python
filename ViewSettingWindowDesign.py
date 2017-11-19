@@ -31,9 +31,9 @@ class Ui_Dialog(object):
         self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
         self.buttonBox.setStandardButtons(QtGui.QDialogButtonBox.Cancel|QtGui.QDialogButtonBox.Ok)
         self.buttonBox.setObjectName(_fromUtf8("buttonBox"))
-        self.checkBoxGrid = QtGui.QCheckBox(Dialog)
-        self.checkBoxGrid.setGeometry(QtCore.QRect(70, 40, 99, 22))
-        self.checkBoxGrid.setObjectName(_fromUtf8("checkBoxGrid"))
+        self.checkBoxUW = QtGui.QCheckBox(Dialog)
+        self.checkBoxUW.setGeometry(QtCore.QRect(70, 40, 251, 22))
+        self.checkBoxUW.setObjectName(_fromUtf8("checkBoxUW"))
         self.checkBoxPixel = QtGui.QCheckBox(Dialog)
         self.checkBoxPixel.setGeometry(QtCore.QRect(70, 70, 131, 22))
         self.checkBoxPixel.setObjectName(_fromUtf8("checkBoxPixel"))
@@ -54,7 +54,7 @@ class Ui_Dialog(object):
 
     def retranslateUi(self, Dialog):
         Dialog.setWindowTitle(_translate("Dialog", "Dialog", None))
-        self.checkBoxGrid.setText(_translate("Dialog", "Siatka", None))
+        self.checkBoxUW.setText(_translate("Dialog", "Początek układu współrzędnych", None))
         self.checkBoxPixel.setText(_translate("Dialog", "Tryb pikselowy", None))
         self.label_12.setText(_translate("Dialog", "Wielkość punktow", None))
         self.checkBoxColors.setText(_translate("Dialog", "Kolorowe punkty", None))
