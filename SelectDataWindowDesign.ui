@@ -26,7 +26,7 @@
       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="currentIndex">
-      <number>1</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="tab">
       <attribute name="title">
@@ -38,8 +38,8 @@
        </property>
        <property name="geometry">
         <rect>
-         <x>580</x>
-         <y>360</y>
+         <x>600</x>
+         <y>520</y>
          <width>181</width>
          <height>31</height>
         </rect>
@@ -134,6 +134,12 @@
          <height>27</height>
         </rect>
        </property>
+       <property name="toolTip">
+        <string>Czas pomiaru z lidaru od którego zaczyna się budowanie pointcloudu, relatywny do pierwszego pomiaru z lidaru</string>
+       </property>
+       <property name="whatsThis">
+        <string/>
+       </property>
       </widget>
       <widget class="QLineEdit" name="endTimeF">
        <property name="geometry">
@@ -144,6 +150,9 @@
          <height>27</height>
         </rect>
        </property>
+       <property name="toolTip">
+        <string>Czas pomiaru z lidaru na którym ma się zakończyć budowanie pointcloudu, relatywny do pierwszego pomiaru z lidaru.</string>
+       </property>
       </widget>
       <widget class="QLabel" name="label_4">
        <property name="geometry">
@@ -153,6 +162,15 @@
          <width>111</width>
          <height>17</height>
         </rect>
+       </property>
+       <property name="toolTip">
+        <string>Czas pomiaru z lidaru od którego zaczyna się budowanie pointcloudu, relatywny do pierwszego pomiaru z lidaru</string>
+       </property>
+       <property name="whatsThis">
+        <string/>
+       </property>
+       <property name="accessibleDescription">
+        <string/>
        </property>
        <property name="text">
         <string>Czas startu [ms]:</string>
@@ -166,6 +184,9 @@
          <width>111</width>
          <height>17</height>
         </rect>
+       </property>
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Czas pomiaru z lidaru na którym ma się zakończyć budowanie pointcloudu, relatywny do pierwszego pomiaru z lidaru.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="text">
         <string>Czas końca [ms]:</string>
@@ -232,17 +253,17 @@
        </item>
        <item>
         <property name="text">
-         <string>stereo_left</string>
+         <string>stereo/left</string>
         </property>
        </item>
        <item>
         <property name="text">
-         <string>stereo_center</string>
+         <string>stereo/centre</string>
         </property>
        </item>
        <item>
         <property name="text">
-         <string>stereo_right</string>
+         <string>stereo/right</string>
         </property>
        </item>
       </widget>
@@ -269,7 +290,7 @@
         </rect>
        </property>
        <property name="text">
-        <string>Folder modeli:</string>
+        <string>Folder modeli kamer:</string>
        </property>
       </widget>
       <widget class="QLineEdit" name="chooseExtrFolder">
@@ -389,6 +410,119 @@
        </property>
        <property name="text">
         <string>^^^ OKIENKO TESTOWE ^^^</string>
+       </property>
+      </widget>
+      <widget class="QCheckBox" name="distortBox">
+       <property name="geometry">
+        <rect>
+         <x>30</x>
+         <y>440</y>
+         <width>141</width>
+         <height>22</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Usuń dystorsję</string>
+       </property>
+      </widget>
+      <widget class="QCheckBox" name="pointToImageBox">
+       <property name="geometry">
+        <rect>
+         <x>170</x>
+         <y>440</y>
+         <width>211</width>
+         <height>22</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Nałóż punkty 3D na obraz</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_16">
+       <property name="geometry">
+        <rect>
+         <x>30</x>
+         <y>410</y>
+         <width>171</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <weight>50</weight>
+         <bold>false</bold>
+         <underline>true</underline>
+        </font>
+       </property>
+       <property name="text">
+        <string>Opcje danych z kamery:</string>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="startTimeImg">
+       <property name="geometry">
+        <rect>
+         <x>230</x>
+         <y>480</y>
+         <width>181</width>
+         <height>27</height>
+        </rect>
+       </property>
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Czas pierwszego zdjęcia do wyswietlenia, relatywny względem czasu pierwszego pomiaru z lidaru. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+       <property name="whatsThis">
+        <string/>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_17">
+       <property name="geometry">
+        <rect>
+         <x>30</x>
+         <y>480</y>
+         <width>201</width>
+         <height>17</height>
+        </rect>
+       </property>
+       <property name="toolTip">
+        <string>Czas pierwszego zdjęcia do wyswietlenia, relatywny względem czasu pierwszego pomiaru z lidaru. </string>
+       </property>
+       <property name="whatsThis">
+        <string/>
+       </property>
+       <property name="accessibleDescription">
+        <string/>
+       </property>
+       <property name="text">
+        <string>Czas pierwszego zdjęcia [ms]:</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_18">
+       <property name="geometry">
+        <rect>
+         <x>30</x>
+         <y>520</y>
+         <width>201</width>
+         <height>17</height>
+        </rect>
+       </property>
+       <property name="toolTip">
+        <string>Czas ostatniego zdjęcia do wyswietlenia, relatywny względem czasu pierwszego pomiaru z lidaru. </string>
+       </property>
+       <property name="text">
+        <string>Czas ostatniego zdjęcia [ms]:</string>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="endTimeImg">
+       <property name="geometry">
+        <rect>
+         <x>230</x>
+         <y>520</y>
+         <width>181</width>
+         <height>27</height>
+        </rect>
+       </property>
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Czas ostatniego zdjęcia do wyswietlenia, relatywny względem czasu pierwszego pomiaru z lidaru. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
       </widget>
      </widget>
@@ -877,8 +1011,8 @@
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>601</x>
-     <y>420</y>
+     <x>632</x>
+     <y>590</y>
     </hint>
     <hint type="destinationlabel">
      <x>595</x>
@@ -893,8 +1027,8 @@
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>724</x>
-     <y>420</y>
+     <x>755</x>
+     <y>590</y>
     </hint>
     <hint type="destinationlabel">
      <x>720</x>
@@ -931,6 +1065,38 @@
     <hint type="destinationlabel">
      <x>715</x>
      <y>495</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pointToImageBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>distortBox</receiver>
+   <slot>setChecked(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>320</x>
+     <y>501</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>162</x>
+     <y>501</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pointToImageBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>distortBox</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>335</x>
+     <y>501</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>163</x>
+     <y>501</y>
     </hint>
    </hints>
   </connection>

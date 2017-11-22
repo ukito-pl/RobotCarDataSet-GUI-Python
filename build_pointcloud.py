@@ -82,14 +82,15 @@ def build_pointcloud(lidar_dir, poses_file, extrinsics_dir, start_time, end_time
     if poses_type == 'ins':
         with open(os.path.join(extrinsics_dir, 'ins.txt')) as extrinsics_file:
             extrinsics = next(extrinsics_file)
+            pose_extr = build_se3_transform([float(x) for x in extrinsics.split(' ')])
             G_posesource_laser = np.linalg.solve(build_se3_transform([float(x) for x in extrinsics.split(' ')]),
                                                      G_posesource_laser)
 
         poses = interpolate_ins_poses(poses_file, timestamps, origin_time,2)   #jeśli pose_kind == 2 to z projektu RCDS
     else:
         # sensor is VO, which is located at the main vehicle frame
+        pose_extr = np.array([1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1])
         poses = interpolate_vo_poses(poses_file, timestamps, origin_time)
-
     pointcloud = np.array([[0], [0], [0], [0]])
     if lidar == 'ldmrs':
         reflectance = None
@@ -116,6 +117,9 @@ def build_pointcloud(lidar_dir, poses_file, extrinsics_dir, start_time, end_time
         scan = np.dot(np.dot(poses[i], G_posesource_laser), np.vstack([scan, np.ones((1, scan.shape[1]))]))
         pointcloud = np.hstack([pointcloud, scan])
 
+    # transform pointcloud from pose coordinate system to car coordinate system
+    # pointcloud = np.dot(pointcloud.transpose(), np.linalg.inv(pose_extr))
+    # pointcloud = pointcloud.transpose()
     pointcloud = pointcloud[:, 1:]
     if pointcloud.shape[1] == 0:
         raise IOError("Could not find scan files for given time range in directory " + lidar_dir)
@@ -134,6 +138,7 @@ def build_pointcloud_nasze(lidar_dir, poses_file, extrinsics_dir, start_time, en
 
     with open(os.path.join(extr_pose)) as pose_extr_file:
         pose_extrinsics = next(pose_extr_file)
+        pose_extr = build_se3_transform([float(x) for x in pose_extrinsics.split(' ')])
         G_posesource_laser = np.linalg.solve(build_se3_transform([float(x) for x in pose_extrinsics.split(' ')]),
                                              G_posesource_laser)
 
@@ -149,7 +154,7 @@ def build_pointcloud_nasze(lidar_dir, poses_file, extrinsics_dir, start_time, en
 
     poses = interpolate_ins_poses('poses.csv', timestamps, origin_time, pose_kind)
 
-    pointcloud = np.array([[0], [0], [0]])
+    pointcloud = np.array([[0], [0], [0],[0]])
     reflectance = np.empty((0))
     i = 0
     lidar_data_file = open('dane_odleglosci_lidar.csv', 'r')
@@ -162,25 +167,25 @@ def build_pointcloud_nasze(lidar_dir, poses_file, extrinsics_dir, start_time, en
                 a = float(x) * np.cos(s)
                 b = float(x) * np.sin(s)
                 j = j + 1
-                one_point = [a] + [-b] + [0]
+                one_point = [a] + [b] + [0]
                 dane_pointcloud.append(one_point)
             dane_pointcloud = np.array(dane_pointcloud)
             scan = dane_pointcloud.transpose()
 
+
             reflectance = np.concatenate((reflectance, np.ravel(scan[2, :])))
             scan[2, :] = np.zeros((1, scan.shape[1]))
 
-            # teoretycznie przy dobrych extrinsicsach ta linijka powinna załatwić całą zabawę z układami współrzędnych, ale ...
+
             scan = np.dot(np.dot(poses[i], G_posesource_laser), np.vstack([scan, np.ones((1, scan.shape[1]))]))
 
-            pointcloud = np.hstack([pointcloud, scan[0:3]])
+            pointcloud = np.hstack([pointcloud, scan])
 
             i = i + 1
-    # ...przy pozycjach z vo trzeba jeszcze obrócić(nie wiem dlaczego):
-    if pose_kind == 1:
-        pointcloud = np.dot(pointcloud.transpose(), euler_to_so3([1.57, 0, 0]))
-        pointcloud = pointcloud.transpose()
-    # w ogóle końcowy układ współrzędnych nie jest taki jaki powinien być ale już walić to, tak jak jest przynajmniej wyświetla dobrze
+
+    #transform pointcloud from pose coordinate system to car coordinate system
+    pointcloud = np.dot(pointcloud.transpose(), np.linalg.inv(pose_extr))
+    pointcloud = pointcloud.transpose()
     print len(poses)
     pointcloud = pointcloud[:, 1:]
     if pointcloud.shape[1] == 0:

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>880</width>
-    <height>720</height>
+    <width>741</width>
+    <height>614</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,6 +15,30 @@
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
+    <item row="2" column="0">
+     <widget class="QProgressBar" name="progressBar1">
+      <property name="value">
+       <number>0</number>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="1">
+     <widget class="QPushButton" name="settingButton">
+      <property name="text">
+       <string>Ustawienia widoku</string>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="1">
+     <widget class="ImageView" name="imageView"/>
+    </item>
+    <item row="1" column="1">
+     <widget class="QPushButton" name="imageButton">
+      <property name="text">
+       <string>Załaduj i wyswietl zdjęcia</string>
+      </property>
+     </widget>
+    </item>
     <item row="0" column="0">
      <widget class="QPushButton" name="selectDataButton">
       <property name="text">
@@ -29,27 +53,13 @@
       </property>
      </widget>
     </item>
-    <item row="1" column="1">
-     <widget class="QPushButton" name="testyButton">
-      <property name="text">
-       <string>Testy</string>
-      </property>
-     </widget>
-    </item>
-    <item row="0" column="1">
-     <widget class="QPushButton" name="settingButton">
-      <property name="text">
-       <string>Ustawienia widoku</string>
-      </property>
-     </widget>
-    </item>
-    <item row="2" column="0">
+    <item row="3" column="0">
      <widget class="GLViewWidget" name="pointcloudArea"/>
     </item>
     <item row="2" column="1">
-     <widget class="QLabel" name="imageLabel">
-      <property name="text">
-       <string/>
+     <widget class="QProgressBar" name="progressBar2">
+      <property name="value">
+       <number>0</number>
       </property>
      </widget>
     </item>
@@ -60,7 +70,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>880</width>
+     <width>741</width>
      <height>25</height>
     </rect>
    </property>
@@ -83,6 +93,11 @@
    <class>GLViewWidget</class>
    <extends>QGraphicsView</extends>
    <header>pyqtgraph.opengl</header>
+  </customwidget>
+  <customwidget>
+   <class>ImageView</class>
+   <extends>QGraphicsView</extends>
+   <header>pyqtgraph</header>
   </customwidget>
  </customwidgets>
  <resources/>

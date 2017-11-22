@@ -14,8 +14,19 @@ from Tkinter import *
 import csv
 from math import sin, cos, atanh, asinh, sqrt, pi, tan, sinh, atan, cosh
 from transform import so3_to_euler
+from image import*
+from camera_model import *
+from datetime import datetime as dt
+from view_images_threads import *
+import matplotlib.pyplot as plt
 
-
+try:
+    _encoding = QtGui.QApplication.UnicodeUTF8
+    def _translate(context, text, disambig):
+        return QtGui.QApplication.translate(context, text, disambig, _encoding)
+except AttributeError:
+    def _translate(context, text, disambig):
+        return QtGui.QApplication.translate(context, text, disambig)
 
 class SelectDataWindow(QtGui.QDialog, SelectDataWindowDesign.Ui_Dialog):
     def __init__(self):
@@ -55,7 +66,7 @@ class SelectDataWindow(QtGui.QDialog, SelectDataWindowDesign.Ui_Dialog):
         global dir_data_f, dir_extr_f, dir_models_f, dir_lidar_data, dir_ins, dir_lidar, dir_camera, start_time, end_time
         global dir_lidar_data_custom, dir_lidar_extr, lidar_synch_time, dir_pose_data, dir_pose_extr, pose_kind
         global skala_vo, clear_h, clear_roll, clear_pitch, pose_synch_time, start_time_custom, end_time_custom
-
+        global camera, undistort, point3d, img_start_time, img_end_time
 
         dir_data_f = self.chooseDataFolder.text()
         dir_extr_f = self.chooseExtrFolder.text()
@@ -63,6 +74,8 @@ class SelectDataWindow(QtGui.QDialog, SelectDataWindowDesign.Ui_Dialog):
         dir_lidar_data = self.chooseLidarDataFile.text()
         start_time = self.startTimeF.text()
         end_time = self.endTimeF.text()
+        img_start_time = self.startTimeImg.text()
+        img_end_time = self.endTimeImg.text()
 
         dir_lidar_data_custom = self.chooseLidarData.text()
         dir_lidar_extr = self.chooseLidarExtr.text()
@@ -84,15 +97,19 @@ class SelectDataWindow(QtGui.QDialog, SelectDataWindowDesign.Ui_Dialog):
         dir_pose_extr = dir_pose_extr.replace('\r', "").replace('\n', "").replace('file://', "")
         start_time = start_time.replace('\r', "").replace('\n', "")
         end_time = end_time.replace('\r', "").replace('\n', "")
+        img_start_time = img_start_time.replace('\r', "").replace('\n', "")
+        img_end_time = img_end_time.replace('\r', "").replace('\n', "")
         lidar_synch_time = lidar_synch_time.replace('\r', "").replace('\n', "")
         pose_synch_time = pose_synch_time.replace('\r', "").replace('\n', "")
         skala_vo = skala_vo.replace('\r', "").replace('\n', "")
         start_time_custom = start_time_custom.replace('\r', "").replace('\n', "")
         end_time_custom = end_time_custom.replace('\r', "").replace('\n', "")
 
-
+        camera = self.chooseCamera.currentText()
         dir_lidar = dir_data_f + "/" + self.chooseLidar.currentText()
         dir_camera = dir_data_f + "/" + self.chooseCamera.currentText()
+        undistort = self.distortBox.isChecked()
+        point3d = self.pointToImageBox.isChecked()
         if self.choosePoseF.currentIndex() == 1:
             dir_ins = dir_data_f + "/gps/ins.csv"
         else:
@@ -105,7 +122,8 @@ class SelectDataWindow(QtGui.QDialog, SelectDataWindowDesign.Ui_Dialog):
         f = open('defaultDir.txt', 'w')
         lines = [dir_data_f, "\n", dir_extr_f, "\n", dir_models_f, "\n", dir_lidar_data, "\n",
                  str(self.chooseLidar.currentIndex()), "\n", str(self.chooseCamera.currentIndex()),
-                 "\n", str(self.choosePoseF.currentIndex()), "\n", start_time, "\n", end_time, "\n",
+                 "\n", str(undistort),"\n",str(point3d), "\n", str(self.choosePoseF.currentIndex()), "\n", start_time,
+                 "\n", end_time,"\n", img_start_time,"\n", img_end_time, "\n",
                  dir_lidar_data_custom, "\n", dir_lidar_extr, "\n", dir_pose_data, "\n", dir_pose_extr, "\n",
                  lidar_synch_time, "\n", pose_synch_time,"\n", skala_vo, "\n", str(pose_kind), "\n", str(clear_h),"\n", str(clear_roll),
                  "\n", str(clear_pitch), "\n", start_time_custom, "\n", end_time_custom]
@@ -116,13 +134,15 @@ class SelectDataWindow(QtGui.QDialog, SelectDataWindowDesign.Ui_Dialog):
 
     # Dla danych z SDK - wyliczanie potrzebnych "czasów" jakby ktoś ograniczył zakres wyświetlania pointclouda
     def count_time(self):
-        global real_end_time, real_start_time
+        global real_end_time, real_start_time, real_img_start_time, real_img_end_time
         path = dir_lidar + '.timestamps'
         f = open(path, 'r')
         x = f.readline()
         real_start_time = int(x.split()[0]) + int(start_time) * 1000  # [0]index elementu który ma zostać po splicie
+        real_img_start_time = int(x.split()[0]) + int(img_start_time) * 1000
         f.close()
         real_end_time = int(real_start_time) + int(end_time) * 1000  # 1418381798086398, 1418381817118734
+        real_img_end_time = int(real_img_start_time) + int(img_end_time) * 1000
 
 
     # Czytanie i wypisywanie danych z pliku "defaultDir.txt" do tzw. "formularzy"
@@ -134,9 +154,19 @@ class SelectDataWindow(QtGui.QDialog, SelectDataWindowDesign.Ui_Dialog):
         self.chooseLidarDataFile.setText(f.readline())
         self.chooseLidar.setCurrentIndex(int(f.readline()))
         self.chooseCamera.setCurrentIndex(int(f.readline()))
+        if f.readline().replace('\n',"") == 'True':
+            self.distortBox.setChecked(True)
+        else:
+            self.distortBox.setChecked(False)
+        if f.readline().replace('\n',"") == 'True':
+            self.pointToImageBox.setChecked(True)
+        else:
+            self.pointToImageBox.setChecked(False)
         self.choosePoseF.setCurrentIndex(int(f.readline()))
         self.startTimeF.setText(f.readline())
         self.endTimeF.setText(f.readline())
+        self.startTimeImg.setText(f.readline())
+        self.endTimeImg.setText(f.readline())
         self.chooseLidarData.setText(f.readline())
         self.chooseLidarExtr.setText(f.readline())
         self.choosePoseData.setText(f.readline())
@@ -255,6 +285,7 @@ class SettingsWindow(QtGui.QDialog, ViewSettingWindowDesign.Ui_Dialog):
 
 class Application(QtGui.QMainWindow, MainWindowDesign.Ui_MainWindow):
     def __init__(self):
+        pg.setConfigOptions(imageAxisOrder='row-major')
         # Using super allows us to
         # access variables, methods etc in the MainWindowDesign.py file
         super(self.__class__, self).__init__()
@@ -263,7 +294,17 @@ class Application(QtGui.QMainWindow, MainWindowDesign.Ui_MainWindow):
         self.pointcloudButton.clicked.connect(self.build_pointcloud)
         self.selectDataButton.clicked.connect(self.open_select_data)
         self.settingButton.clicked.connect(self.open_settings)
-        self.testyButton.clicked.connect(self.do_testowania)
+        self.imageButton.clicked.connect(self.view_images)
+
+
+        #Ukryj niepotrzebne przyciski
+        self.imageView.ui.roiBtn.hide()
+        self.imageView.ui.menuBtn.hide()
+        #Ukryj histogram
+        self.imageView.ui.histogram.item.close()
+        self.imageView.ui.histogram.setFixedWidth(1)
+
+
 
 
     def open_select_data(self):
@@ -857,39 +898,78 @@ class Application(QtGui.QMainWindow, MainWindowDesign.Ui_MainWindow):
 #SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS
 #SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS
 
-    # Funkcja do wyświetlania, testowania czegokolwiek uruchamiana guzikiem "Testy"
-    def do_testowania(self):
-        do = 0
+
+    def view_images(self):
+
+        timestamps_path = os.path.join(os.path.join(str(dir_data_f), str(camera) + '.timestamps'))
+        if not os.path.isfile(timestamps_path):
+            timestamps_path = os.path.join(str(dir_data_f),  'stereo.timestamps')
+            if not os.path.isfile(timestamps_path):
+                raise IOError("Could not find timestamps file")
+
+        model = None
+        if str(dir_models_f) and point3d: #jeśli ma być projekcja punktów na obraz(usunięcie dystorsji wymagane)
+            model = CameraModel(str(dir_models_f), str(dir_camera))
+            self.imageViewThread = ViewImagesThread(timestamps_path, real_img_start_time, real_img_end_time, model,
+                                                    str(dir_camera), str(dir_ins), str(dir_extr_f),True, self.pointcloud)
+        elif str(dir_models_f) and undistort: #jeśli ma być usunięta dystorsja z obrazu
+            model = CameraModel(str(dir_models_f), str(dir_camera))
+            self.imageViewThread = ViewImagesThread(timestamps_path, real_img_start_time, real_img_end_time, model,
+                                                    str(dir_camera), str(dir_ins), str(dir_extr_f),False)
+        else:
+            self.imageViewThread = ViewImagesThread(timestamps_path, real_img_start_time, real_img_end_time, model,
+                                                    str(dir_camera), str(dir_ins), str(dir_extr_f),False)
+
+        self.connect(self.imageViewThread, SIGNAL("draw_images(PyQt_PyObject)"), self.draw_images)
+        self.connect(self.imageViewThread, SIGNAL("update_progressbar(PyQt_PyObject)"), self.update_progressbar)
+        self.imageViewThread.start()
+        self.imageButton.setEnabled(False)
+        self.imageButton.setText(_translate("MainWindow", "Ładowanie...", None))
+
+    def draw_images(self,images):
+
+        self.imageView.setImage(images)
+        self.imageButton.setEnabled(True)
+        self.imageButton.setText(_translate("MainWindow", "Załaduj i wyswietl zdjęcia", None))
+
+    def update_progressbar(self,progressbar):
+        if progressbar[0] == 1:
+            self.progressBar1.setValue(progressbar[1])
+        elif progressbar[0] == 2:
+            self.progressBar2.setValue(progressbar[1])
+
 
 
     def build_pointcloud(self):
-        self.tworz_pliki_z_lidaru()
-        if pose_kind == 0:
-            self.poniekad_dobrze_metoda_akcelerometr_magnetometr()
-        elif pose_kind == 1:
-            self.marek_wersja_1()
-
         if sdk:
             self.new_thread = BuildPointcloudThread(str(dir_lidar),
                                                     str(dir_ins),
                                                     str(dir_extr_f),
                                                     real_start_time, real_end_time)
         else:
+            self.tworz_pliki_z_lidaru()
+            if pose_kind == 0:
+                self.poniekad_dobrze_metoda_akcelerometr_magnetometr()
+            elif pose_kind == 1:
+                self.marek_wersja_1()
             self.new_thread = BuildPointcloudThread(str(dir_lidar_data_custom),
                                                     str(dir_pose_data),
                                                     str(dir_lidar_extr),
                                                     int(start_time_custom), int(end_time_custom), -1, str(dir_pose_extr), int(pose_kind))
 
-
         self.connect(self.new_thread, SIGNAL("drawPointcloud(PyQt_PyObject)"), self.draw_pointcloud)
+        self.connect(self.new_thread, SIGNAL("update_progressbar(PyQt_PyObject"),self.update_progressbar)
         self.new_thread.start()
         self.pointcloudButton.setEnabled(False)
-        self.pointcloudButton.setText("Building pointcloud...")
+        self.pointcloudButton.setText("Budowanie...")
 
     def draw_pointcloud(self, pointcloud):
+        self.pointcloud = pointcloud
+        if sdk:
+            #flip pointcloud, for viewing purposes only
+            pointcloud = np.dot(build_se3_transform(np.array([0,0,0,3.14,0,0])), pointcloud)
         pointcloud = pointcloud[0:3, :].transpose()
         print pointcloud
-        pointcloud = np.array(-pointcloud)
 
         plot_item = gl.GLScatterPlotItem(pos=pointcloud, size=(float(points_size)), color=[0.7, 0.7, 0.7, 1], pxMode=pixel_mode)
         #plot_item.translate(5, 5, 0)
@@ -913,7 +993,7 @@ class Application(QtGui.QMainWindow, MainWindowDesign.Ui_MainWindow):
             self.pointcloudArea.addItem(ukl_wsp_y)
             self.pointcloudArea.addItem(ukl_wsp_z)
         self.pointcloudButton.setEnabled(True)
-        self.pointcloudButton.setText("Build and draw sample pointcloud")
+        self.pointcloudButton.setText("Buduj i rysuj pointclouda")
 
 
 
