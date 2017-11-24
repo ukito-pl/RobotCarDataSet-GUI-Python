@@ -26,7 +26,7 @@
       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="tab">
       <attribute name="title">
@@ -1074,7 +1074,7 @@
         </rect>
        </property>
        <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Czas pierwszego zdjęcia do wyswietlenia, relatywny względem czasu startu. W przypadku nakładania punktów 3d na obraz jest on równy 0.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Czas pierwszego zdjęcia do wyswietlenia, relatywny względem czasu startu. W przypadku nakładania punktów 3d na obraz powinien być dobrany tak aby pierwsza klatka obrazu była zrobiona w tym samym czasie co pierwszy pomiar z lidaru.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="whatsThis">
         <string/>
@@ -1096,7 +1096,7 @@
         </rect>
        </property>
        <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Czas pierwszego zdjęcia do wyswietlenia, relatywny względem czasu startu. W przypadku nakładania punktów 3d na obraz jest on równy 0.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Czas pierwszego zdjęcia do wyswietlenia, relatywny względem czasu startu. W przypadku nakładania punktów 3d na obraz powinien być dobrany tak aby pierwsza klatka obrazu była zrobiona w tym samym czasie co pierwszy pomiar z lidaru.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="whatsThis">
         <string/>
@@ -1247,22 +1247,6 @@
     <hint type="destinationlabel">
      <x>163</x>
      <y>501</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>pointToImageBoxCustom</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>startTimeImgCustom</receiver>
-   <slot>setDisabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>482</x>
-     <y>512</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>414</x>
-     <y>507</y>
     </hint>
    </hints>
   </connection>

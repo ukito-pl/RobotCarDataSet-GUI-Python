@@ -142,9 +142,9 @@ class ViewImagesThreadCustom(QThread):
                 extrinsics = [float(x) for x in next(extrinsics_file).split(' ')]
             camera_extrinsics = build_se3_transform(extrinsics)
 
-            with open(os.path.join(self.pose_extr_path)) as pose_extr_file:
-                pose_extrinsics = next(pose_extr_file)
-                pose_extr = build_se3_transform([float(x) for x in pose_extrinsics.split(' ')])
+            with open(self.pose_extr_path) as pose_extr_file:
+                pose_extrinsics = [float(x) for x in next(pose_extr_file).split(' ')]
+                pose_extr = build_se3_transform(pose_extrinsics)
 
 
             timestamps = []
@@ -181,7 +181,9 @@ class ViewImagesThreadCustom(QThread):
 
                 if k > 0:
                     #pydevd.settrace()
+                    trans = np.linalg.solve( pose_extr,camera_extrinsics)
                     poses[k-1] = np.linalg.inv(poses[k-1])
+                    poses[k-1] = np.dot(poses[k-1],trans)
                     pointcloud = np.dot( poses[k-1],pointcloud_base)
 
 

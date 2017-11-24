@@ -50,13 +50,16 @@ class SelectDataWindow(QtGui.QDialog, SelectDataWindowDesign.Ui_Dialog):
         self.buttonBoxDataSet.accepted.connect(self.wersja_sdk)
         self.buttonBoxCustom.accepted.connect(self.wersja_custom)
         self.pointToImageBox.clicked.connect(self.point3d_checked)
-        self.pointToImageBoxCustom.clicked.connect(self.point3d_custom_checked)
+        self.choosePoseKind.currentIndexChanged.connect(self.disable_vo_scale)
 
     def point3d_checked(self):
         self.startTimeImg.setText("0")
 
-    def point3d_custom_checked(self):
-        self.startTimeImgCustom.setText("0")
+    def disable_vo_scale(self, id):
+        if id == 0:
+            self.skalaVO.setDisabled(True)
+        else:
+            self.skalaVO.setEnabled(True)
 
     def wersja_sdk(self):
         global sdk
@@ -316,7 +319,7 @@ class Application(QtGui.QMainWindow, MainWindowDesign.Ui_MainWindow):
         self.selectDataButton.clicked.connect(self.open_select_data)
         self.settingButton.clicked.connect(self.open_settings)
         self.imageButton.clicked.connect(self.view_images)
-
+        self.pointcloud = None
 
         #Ukryj niepotrzebne przyciski
         self.imageView.ui.roiBtn.hide()
