@@ -159,29 +159,32 @@ def build_pointcloud_nasze(lidar_dir, poses_file, extrinsics_dir, start_time, en
     i = 0
     lidar_data_file = open('dane_odleglosci_lidar.csv', 'r')
     for line in lidar_data_file:
-        if i < poses.__len__():
-            dane_pointcloud = []
-            j = -45
-            for x in line.split(','):
-                s = np.pi / 180 * j
-                a = float(x) * np.cos(s)
-                b = float(x) * np.sin(s)
-                j = j + 1
-                one_point = [a] + [b] + [0]
-                dane_pointcloud.append(one_point)
-            dane_pointcloud = np.array(dane_pointcloud)
-            scan = dane_pointcloud.transpose()
+        #pydevd.settrace()
+        timestamp = line.split(',')[0]
+        if start_time <= int(timestamp) <= end_time:
+            if i < poses.__len__():
+                dane_pointcloud = []
+                j = -45
+                for x in line.split(',')[1:]:
+                    s = np.pi / 180 * j
+                    a = float(x) * np.cos(s)
+                    b = float(x) * np.sin(s)
+                    j = j + 1
+                    one_point = [a] + [b] + [0]
+                    dane_pointcloud.append(one_point)
+                dane_pointcloud = np.array(dane_pointcloud)
+                scan = dane_pointcloud.transpose()
 
 
-            reflectance = np.concatenate((reflectance, np.ravel(scan[2, :])))
-            scan[2, :] = np.zeros((1, scan.shape[1]))
+                reflectance = np.concatenate((reflectance, np.ravel(scan[2, :])))
+                scan[2, :] = np.zeros((1, scan.shape[1]))
 
 
-            scan = np.dot(np.dot(poses[i], G_posesource_laser), np.vstack([scan, np.ones((1, scan.shape[1]))]))
+                scan = np.dot(np.dot(poses[i], G_posesource_laser), np.vstack([scan, np.ones((1, scan.shape[1]))]))
 
-            pointcloud = np.hstack([pointcloud, scan])
+                pointcloud = np.hstack([pointcloud, scan])
 
-            i = i + 1
+                i = i + 1
 
     #transform pointcloud from pose coordinate system to car coordinate system
     pointcloud = np.dot(pointcloud.transpose(), np.linalg.inv(pose_extr))

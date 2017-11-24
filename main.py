@@ -49,7 +49,14 @@ class SelectDataWindow(QtGui.QDialog, SelectDataWindowDesign.Ui_Dialog):
         self.browseButton7.clicked.connect(self.browse7)
         self.buttonBoxDataSet.accepted.connect(self.wersja_sdk)
         self.buttonBoxCustom.accepted.connect(self.wersja_custom)
+        self.pointToImageBox.clicked.connect(self.point3d_checked)
+        self.pointToImageBoxCustom.clicked.connect(self.point3d_custom_checked)
 
+    def point3d_checked(self):
+        self.startTimeImg.setText("0")
+
+    def point3d_custom_checked(self):
+        self.startTimeImgCustom.setText("0")
 
     def wersja_sdk(self):
         global sdk
@@ -66,7 +73,7 @@ class SelectDataWindow(QtGui.QDialog, SelectDataWindowDesign.Ui_Dialog):
         global dir_data_f, dir_extr_f, dir_models_f, dir_lidar_data, dir_ins, dir_lidar, dir_camera, start_time, end_time
         global dir_lidar_data_custom, dir_lidar_extr, lidar_synch_time, dir_pose_data, dir_pose_extr, pose_kind
         global skala_vo, clear_h, clear_roll, clear_pitch, pose_synch_time, start_time_custom, end_time_custom
-        global camera, undistort, point3d, img_start_time, img_end_time
+        global camera, undistort, point3d, img_start_time, img_end_time, dir_image_custom, img_start_time_custom, img_end_time_custom, point3d_custom
 
         dir_data_f = self.chooseDataFolder.text()
         dir_extr_f = self.chooseExtrFolder.text()
@@ -76,12 +83,15 @@ class SelectDataWindow(QtGui.QDialog, SelectDataWindowDesign.Ui_Dialog):
         end_time = self.endTimeF.text()
         img_start_time = self.startTimeImg.text()
         img_end_time = self.endTimeImg.text()
+        img_start_time_custom = self.startTimeImgCustom.text()
+        img_end_time_custom = self.endTimeImgCustom.text()
 
         dir_lidar_data_custom = self.chooseLidarData.text()
         dir_lidar_extr = self.chooseLidarExtr.text()
         lidar_synch_time = self.synchLidarTime.text()
         dir_pose_data = self.choosePoseData.text()
         dir_pose_extr = self.choosePoseExtr.text()
+        dir_image_custom = self.chooseImgData.text()
         pose_synch_time = self.synchPoseTime.text()
         skala_vo = self.skalaVO.text()
         start_time_custom = self.startTimeCustom.text()
@@ -95,10 +105,13 @@ class SelectDataWindow(QtGui.QDialog, SelectDataWindowDesign.Ui_Dialog):
         dir_lidar_extr = dir_lidar_extr.replace('\r', "").replace('\n', "").replace('file://', "")
         dir_pose_data = dir_pose_data.replace('\r', "").replace('\n', "").replace('file://', "")
         dir_pose_extr = dir_pose_extr.replace('\r', "").replace('\n', "").replace('file://', "")
+        dir_image_custom = dir_image_custom.replace('\r', "").replace('\n', "").replace('file://', "")
         start_time = start_time.replace('\r', "").replace('\n', "")
         end_time = end_time.replace('\r', "").replace('\n', "")
         img_start_time = img_start_time.replace('\r', "").replace('\n', "")
         img_end_time = img_end_time.replace('\r', "").replace('\n', "")
+        img_start_time_custom = img_start_time_custom.replace('\r', "").replace('\n', "")
+        img_end_time_custom = img_end_time_custom.replace('\r', "").replace('\n', "")
         lidar_synch_time = lidar_synch_time.replace('\r', "").replace('\n', "")
         pose_synch_time = pose_synch_time.replace('\r', "").replace('\n', "")
         skala_vo = skala_vo.replace('\r', "").replace('\n', "")
@@ -110,6 +123,7 @@ class SelectDataWindow(QtGui.QDialog, SelectDataWindowDesign.Ui_Dialog):
         dir_camera = dir_data_f + "/" + self.chooseCamera.currentText()
         undistort = self.distortBox.isChecked()
         point3d = self.pointToImageBox.isChecked()
+        point3d_custom = self.pointToImageBoxCustom.isChecked()
         if self.choosePoseF.currentIndex() == 1:
             dir_ins = dir_data_f + "/gps/ins.csv"
         else:
@@ -122,9 +136,9 @@ class SelectDataWindow(QtGui.QDialog, SelectDataWindowDesign.Ui_Dialog):
         f = open('defaultDir.txt', 'w')
         lines = [dir_data_f, "\n", dir_extr_f, "\n", dir_models_f, "\n", dir_lidar_data, "\n",
                  str(self.chooseLidar.currentIndex()), "\n", str(self.chooseCamera.currentIndex()),
-                 "\n", str(undistort),"\n",str(point3d), "\n", str(self.choosePoseF.currentIndex()), "\n", start_time,
-                 "\n", end_time,"\n", img_start_time,"\n", img_end_time, "\n",
-                 dir_lidar_data_custom, "\n", dir_lidar_extr, "\n", dir_pose_data, "\n", dir_pose_extr, "\n",
+                 "\n", str(undistort),"\n",str(point3d),"\n", str(point3d_custom), "\n", str(self.choosePoseF.currentIndex()), "\n", start_time,
+                 "\n", end_time,"\n", img_start_time,"\n", img_end_time, "\n", img_start_time_custom, "\n", img_end_time_custom, "\n",
+                 dir_lidar_data_custom, "\n", dir_lidar_extr, "\n", dir_pose_data, "\n", dir_pose_extr,"\n", dir_image_custom, "\n",
                  lidar_synch_time, "\n", pose_synch_time,"\n", skala_vo, "\n", str(pose_kind), "\n", str(clear_h),"\n", str(clear_roll),
                  "\n", str(clear_pitch), "\n", start_time_custom, "\n", end_time_custom]
         f.writelines(lines)
@@ -139,7 +153,7 @@ class SelectDataWindow(QtGui.QDialog, SelectDataWindowDesign.Ui_Dialog):
         f = open(path, 'r')
         x = f.readline()
         real_start_time = int(x.split()[0]) + int(start_time) * 1000  # [0]index elementu który ma zostać po splicie
-        real_img_start_time = int(x.split()[0]) + int(img_start_time) * 1000
+        real_img_start_time = real_start_time + int(img_start_time) * 1000
         f.close()
         real_end_time = int(real_start_time) + int(end_time) * 1000  # 1418381798086398, 1418381817118734
         real_img_end_time = int(real_img_start_time) + int(img_end_time) * 1000
@@ -162,15 +176,22 @@ class SelectDataWindow(QtGui.QDialog, SelectDataWindowDesign.Ui_Dialog):
             self.pointToImageBox.setChecked(True)
         else:
             self.pointToImageBox.setChecked(False)
+        if f.readline().replace('\n',"") == 'True':
+            self.pointToImageBoxCustom.setChecked(True)
+        else:
+            self.pointToImageBoxCustom.setChecked(False)
         self.choosePoseF.setCurrentIndex(int(f.readline()))
         self.startTimeF.setText(f.readline())
         self.endTimeF.setText(f.readline())
         self.startTimeImg.setText(f.readline())
         self.endTimeImg.setText(f.readline())
+        self.startTimeImgCustom.setText(f.readline())
+        self.endTimeImgCustom.setText(f.readline())
         self.chooseLidarData.setText(f.readline())
         self.chooseLidarExtr.setText(f.readline())
         self.choosePoseData.setText(f.readline())
         self.choosePoseExtr.setText(f.readline())
+        self.chooseImgData.setText(f.readline())
         self.synchLidarTime.setText(f.readline())
         self.synchPoseTime.setText(f.readline())
         self.skalaVO.setText(f.readline())
@@ -842,7 +863,7 @@ class Application(QtGui.QMainWindow, MainWindowDesign.Ui_MainWindow):
 
 
     def tworz_pliki_z_lidaru(self):
-        #Tworzy plik z kolejnymi scanami z lidaru oraz plik timestampow odpowiadający kolejnym scanom
+        # Tworzy plik z kolejnymi scanami z lidaru oraz plik timestampow odpowiadający kolejnym scanom
 
 
         # konwersja czasu z lidaru na relatywny do pierwszego pomiaru
@@ -862,7 +883,7 @@ class Application(QtGui.QMainWindow, MainWindowDesign.Ui_MainWindow):
         usunieto = 0
         for i in range(len(dane_time)):
             time = (int(dane_time[i] - float(odjemnik))) / 1000
-            if time >= float(lidar_synch_time)*1000:
+            if time >= float(lidar_synch_time) * 1000:
                 dane_time_lidar.append([time])
             else:
                 usunieto = usunieto + 1
@@ -879,7 +900,7 @@ class Application(QtGui.QMainWindow, MainWindowDesign.Ui_MainWindow):
         dane_lidar = []
         lidar_data_file = open(dir_lidar_data_custom, 'r')
         for line in lidar_data_file:
-            if usunieto <= 0:
+            if usunieto < 0:
                 try:
                     one_scan = [float(x) for x in line.split(',')[11:282]]
                     dane_lidar.append(one_scan)
@@ -890,7 +911,10 @@ class Application(QtGui.QMainWindow, MainWindowDesign.Ui_MainWindow):
         lidar_data_file.close()
         f = open('dane_odleglosci_lidar.csv', 'w')
         f_csv = csv.writer(f)
-        f_csv.writerows(dane_lidar)
+        dane_do_zapisania = []
+        for i in range(0,dane_lidar.__len__()):
+            dane_do_zapisania.append(dane_time_lidar[i]+dane_lidar[i])
+        f_csv.writerows(dane_do_zapisania)
         f.close()
         print "Utworzono plik dane_odleglosci_lidar.csv"
 
@@ -900,25 +924,35 @@ class Application(QtGui.QMainWindow, MainWindowDesign.Ui_MainWindow):
 
 
     def view_images(self):
-
-        timestamps_path = os.path.join(os.path.join(str(dir_data_f), str(camera) + '.timestamps'))
-        if not os.path.isfile(timestamps_path):
-            timestamps_path = os.path.join(str(dir_data_f),  'stereo.timestamps')
+        if sdk:
+            timestamps_path = os.path.join(os.path.join(str(dir_data_f), str(camera) + '.timestamps'))
             if not os.path.isfile(timestamps_path):
-                raise IOError("Could not find timestamps file")
+                timestamps_path = os.path.join(str(dir_data_f),  'stereo.timestamps')
+                if not os.path.isfile(timestamps_path):
+                    raise IOError("Could not find timestamps file")
 
-        model = None
-        if str(dir_models_f) and point3d: #jeśli ma być projekcja punktów na obraz(usunięcie dystorsji wymagane)
-            model = CameraModel(str(dir_models_f), str(dir_camera))
-            self.imageViewThread = ViewImagesThread(timestamps_path, real_img_start_time, real_img_end_time, model,
-                                                    str(dir_camera), str(dir_ins), str(dir_extr_f),True, self.pointcloud)
-        elif str(dir_models_f) and undistort: #jeśli ma być usunięta dystorsja z obrazu
-            model = CameraModel(str(dir_models_f), str(dir_camera))
-            self.imageViewThread = ViewImagesThread(timestamps_path, real_img_start_time, real_img_end_time, model,
-                                                    str(dir_camera), str(dir_ins), str(dir_extr_f),False)
+            model = None
+            if str(dir_models_f) and point3d: #jeśli ma być projekcja punktów na obraz(usunięcie dystorsji wymagane)
+                model = CameraModel(str(dir_models_f), str(dir_camera))
+                self.imageViewThread = ViewImagesThreadSDK(timestamps_path, real_img_start_time, real_img_end_time, model,
+                                                        str(dir_camera), str(dir_ins), str(dir_extr_f),True, self.pointcloud)
+            elif str(dir_models_f) and undistort: #jeśli ma być usunięta dystorsja z obrazu
+                model = CameraModel(str(dir_models_f), str(dir_camera))
+                self.imageViewThread = ViewImagesThreadSDK(timestamps_path, real_img_start_time, real_img_end_time, model,
+                                                        str(dir_camera), str(dir_ins), str(dir_extr_f),False)
+            else:
+                self.imageViewThread = ViewImagesThreadSDK(timestamps_path, real_img_start_time, real_img_end_time, model,
+                                                        str(dir_camera), str(dir_ins), str(dir_extr_f),False)
         else:
-            self.imageViewThread = ViewImagesThread(timestamps_path, real_img_start_time, real_img_end_time, model,
-                                                    str(dir_camera), str(dir_ins), str(dir_extr_f),False)
+            if not point3d_custom:
+                self.imageViewThread = ViewImagesThreadCustom(str(dir_image_custom), 200, int(start_time_custom)+int(img_start_time_custom),
+                                                              int(start_time_custom)+int(img_end_time_custom),False)
+            else:
+                model = SimpleCustomCameraModel("camera_models/my_camera.txt")
+                camera_extr_path = "extrinsics/camera_extr.txt"
+                self.imageViewThread = ViewImagesThreadCustom(str(dir_image_custom), 200, int(start_time_custom)+int(img_start_time_custom),
+                                                              int(start_time_custom)+int(img_end_time_custom), True, self.pointcloud, model,
+                                                              camera_extr_path, str(dir_pose_data),str(dir_pose_extr))
 
         self.connect(self.imageViewThread, SIGNAL("draw_images(PyQt_PyObject)"), self.draw_images)
         self.connect(self.imageViewThread, SIGNAL("update_progressbar(PyQt_PyObject)"), self.update_progressbar)
@@ -955,7 +989,7 @@ class Application(QtGui.QMainWindow, MainWindowDesign.Ui_MainWindow):
             self.new_thread = BuildPointcloudThread(str(dir_lidar_data_custom),
                                                     str(dir_pose_data),
                                                     str(dir_lidar_extr),
-                                                    int(start_time_custom), int(end_time_custom), -1, str(dir_pose_extr), int(pose_kind))
+                                                    int(start_time_custom)*1000, int(end_time_custom)*1000, -1, str(dir_pose_extr), int(pose_kind))
 
         self.connect(self.new_thread, SIGNAL("drawPointcloud(PyQt_PyObject)"), self.draw_pointcloud)
         self.connect(self.new_thread, SIGNAL("update_progressbar(PyQt_PyObject"),self.update_progressbar)
@@ -966,15 +1000,14 @@ class Application(QtGui.QMainWindow, MainWindowDesign.Ui_MainWindow):
     def draw_pointcloud(self, pointcloud):
         self.pointcloud = pointcloud
         if sdk:
-            #flip pointcloud, for viewing purposes only
+            #odwróć pointclouda, żeby dobrze było oglądać
             pointcloud = np.dot(build_se3_transform(np.array([0,0,0,3.14,0,0])), pointcloud)
         pointcloud = pointcloud[0:3, :].transpose()
         print pointcloud
 
         plot_item = gl.GLScatterPlotItem(pos=pointcloud, size=(float(points_size)), color=[0.7, 0.7, 0.7, 1], pxMode=pixel_mode)
-        #plot_item.translate(5, 5, 0)
 
-        #clear pointcloud area
+        #wyczyść obszar rysowania
         if self.pointcloudArea.items.__len__() > 0:
             for i in range(0,self.pointcloudArea.items.__len__()):
                 self.pointcloudArea.items.__delitem__(0)

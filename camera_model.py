@@ -147,3 +147,53 @@ class CameraModel:
         lut = lut.reshape([2, lut.size // 2])
         self.bilinear_lut = lut.transpose()
 
+class SimpleCustomCameraModel():
+
+    def __init__(self, model_dir,):
+        """Loads a camera model from disk.
+
+        Args:
+            models_dir (str): directory to camera intrinsic model file
+
+        """
+        with open(model_dir) as intrinsics_file:
+            vals = [float(x) for x in next(intrinsics_file).split()]
+            self.focal_length = (vals[0], vals[1])
+            self.principal_point = (vals[2], vals[3])
+
+            G_camera_image = []
+            for line in intrinsics_file:
+                G_camera_image.append([float(x) for x in line.split()])
+            self.G_camera_image = np.array(G_camera_image)
+
+    def project(self, xyz, image_size):
+        """Projects a pointcloud into the camera using a pinhole camera model.
+
+        Args:
+            xyz (:obj: `numpy.ndarray`): 3xn array, where each column is (x, y, z) point relative to camera frame.
+            image_size (tuple[int]): dimensions of image in pixels
+
+        Returns:
+            numpy.ndarray: 2xm array of points, where each column is the (u, v) pixel coordinates of a point in pixels.
+            numpy.array: array of depth values for points in image.
+
+        Note:
+            Number of output points m will be less than or equal to number of input points n, as points that do not
+            project into the image are discarded.
+
+        """
+        if xyz.shape[0] == 3:
+            xyz = np.stack((xyz, np.ones((1, xyz.shape[1]))))
+        xyzw = np.linalg.solve(self.G_camera_image, xyz)
+
+        # Find which points lie in front of the camera
+        in_front = [i for i in range(0, xyzw.shape[1]) if xyzw[2, i] >= 0]
+        xyzw = xyzw[:, in_front]
+
+        uv = np.vstack((self.focal_length[0] * xyzw[0, :] / xyzw[2, :] + self.principal_point[0],
+                        self.focal_length[1] * xyzw[1, :] / xyzw[2, :] + self.principal_point[1]))
+
+        in_img = [i for i in range(0, uv.shape[1])
+                  if 0.5 <= uv[0, i] <= image_size[1] and 0.5 <= uv[1, i] <= image_size[0]]
+
+        return uv[:, in_img], np.ravel(xyzw[2, in_img])
