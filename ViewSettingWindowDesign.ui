@@ -96,33 +96,33 @@
  <connections>
   <connection>
    <sender>buttonBox</sender>
-   <signal>accepted()</signal>
-   <receiver>Dialog</receiver>
-   <slot>accept()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>409</x>
-     <y>235</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>428</x>
-     <y>352</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>buttonBox</sender>
    <signal>rejected()</signal>
    <receiver>Dialog</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>324</x>
+     <x>395</x>
      <y>229</y>
     </hint>
     <hint type="destinationlabel">
+     <x>403</x>
+     <y>328</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>accepted()</signal>
+   <receiver>Dialog</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel">
      <x>328</x>
-     <y>360</y>
+     <y>226</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>334</x>
+     <y>295</y>
     </hint>
    </hints>
   </connection>

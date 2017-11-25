@@ -17,7 +17,7 @@ import csv
 import numpy as np
 import numpy.matlib as ml
 from transform import *
-import pydevd
+#import pydevd
 
 def interpolate_vo_poses(vo_path, pose_timestamps, origin_timestamp):
     """Interpolate poses from visual odometry.

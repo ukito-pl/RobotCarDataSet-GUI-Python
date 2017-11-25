@@ -20,7 +20,7 @@ import csv
 from transform import *
 
 from interpolate_poses import interpolate_vo_poses, interpolate_ins_poses
-import pydevd
+#import pydevd
 
 
 def build_pointcloud(lidar_dir, poses_file, extrinsics_dir, start_time, end_time, origin_time=-1):

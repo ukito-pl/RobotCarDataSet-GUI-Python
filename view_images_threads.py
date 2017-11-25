@@ -5,7 +5,7 @@ from image import*
 import numpy as np
 from transform import*
 from interpolate_poses import*
-import pydevd
+#import pydevd
 import colorsys
 
 class ViewImagesThreadSDK(QThread):
