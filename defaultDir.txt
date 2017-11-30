@@ -13,11 +13,11 @@ True
 1000000
 0
 180000
-/home/qahu/Desktop/prezentacja_2/9/dane.csv
+/home/qahu/Desktop/prezentacja_2/12/dane.csv
 /home/qahu/Desktop/prezentacja_2/extr/lidar_pion_extr.txt
-/home/qahu/Desktop/prezentacja_2/9/vo_poses2.csv
+/home/qahu/Desktop/prezentacja_2/12/vo_poses2.csv
 /home/qahu/Desktop/prezentacja_2/extr/camera_extr.txt
-/home/qahu/Desktop/prezentacja_2/9/mystream_11_3_8_11_44.csv
+/home/qahu/Desktop/prezentacja_2/12/mystream_11_3_8_42_55.csv
 /home/qahu/Desktop/prezentacja_2/extr/imu_extr.txt
 /media/qahu/DATA/inz_dane_pomiarowe/przejazd_9
 1000
@@ -29,4 +29,4 @@ True
 False
 0
 10000000000
-0.3
+0.9

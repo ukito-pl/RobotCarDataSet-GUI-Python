@@ -76,7 +76,7 @@ class Ui_MainWindow(object):
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow", None))
+        MainWindow.setWindowTitle(_translate("MainWindow", "Okno główne", None))
         self.settingButton.setText(_translate("MainWindow", "Ustawienia widoku", None))
         self.imageButton.setText(_translate("MainWindow", "Załaduj i wyswietl zdjęcia", None))
         self.selectDataButton.setText(_translate("MainWindow", "Wybierz dane", None))

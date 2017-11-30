@@ -142,7 +142,6 @@ class MadgwickAHRS:
         step /= norm(step)  # normalise step magnitude
 
         # Compute rate of change of quaternion
-        print self.beta
         qdot = (q * Quaternion(0, gyroscope[0], gyroscope[1], gyroscope[2])) * 0.5 - self.beta * step.T
 
         # Integrate to yield quaternion
@@ -808,7 +807,7 @@ class Application(QtGui.QMainWindow, MainWindowDesign.Ui_MainWindow):
         sensors_file.close()
 
         euler = []
-        AHRS = MadgwickAHRS()
+        AHRS = MadgwickAHRS(None, None, beta_value)
         for i in range(len(dane_akc)):
             AHRS.update_imu(dane_gyro[i], dane_akc[i])
             euler.append(Quaternion.to_euler123(Quaternion.conj(AHRS.quaternion)))
