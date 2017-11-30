@@ -816,9 +816,9 @@ class Application(QtGui.QMainWindow, MainWindowDesign.Ui_MainWindow):
         yaw = []
         for i in range(len(euler)):
             yaw.append(euler[i][2] * 180 / pi)
-        #pyplot.plot(range(len(yaw)), yaw)
-        #pyplot.grid()
-        #pyplot.show()
+        pyplot.plot(range(len(yaw)), yaw)
+        pyplot.grid()
+        pyplot.show()
 
         j = 0
         dane_imu = []
@@ -1155,7 +1155,7 @@ class Application(QtGui.QMainWindow, MainWindowDesign.Ui_MainWindow):
 
         start = False
         i = 0
-        path = dir_lidar_data_imu
+        #path = dir_lidar_data_imu
         dane_imu = []
         sensors_file = open(dir_pose_data_imu, 'r')
         for line in sensors_file:
@@ -1504,6 +1504,7 @@ class Application(QtGui.QMainWindow, MainWindowDesign.Ui_MainWindow):
                 dir_pose_data = dir_pose_data_vo
             elif pose_kind == 3:
                 self.madgwick_gyro_akc()
+                #self.poniekad_dobrze_metoda_akcelerometr_magnetometr()
                 dir_pose_extr = dir_pose_extr_imu
                 dir_pose_data = dir_pose_data_imu
             self.new_thread = BuildPointcloudThread(str(dir_lidar_data_custom),

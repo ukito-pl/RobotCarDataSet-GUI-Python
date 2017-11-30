@@ -5,7 +5,7 @@ from image import*
 import numpy as np
 from transform import*
 from interpolate_poses import*
-#import pydevd
+import pydevd
 import colorsys
 
 class ViewImagesThreadSDK(QThread):
@@ -166,8 +166,7 @@ class ViewImagesThreadCustom(QThread):
             #pydevd.settrace()
             poses = interpolate_ins_poses('poses.csv', timestamps, timestamps[0], 1)
 
-            pointcloud = np.dot(self.pointcloud.transpose(), camera_extrinsics)
-            pointcloud = pointcloud.transpose()
+            pointcloud = self.pointcloud
             pointcloud_base = pointcloud
             i = int(self.start_time / self.delta_t)
             k = 0
@@ -182,9 +181,8 @@ class ViewImagesThreadCustom(QThread):
                 if k > 0:
                     #pydevd.settrace()
                     trans = np.linalg.solve( pose_extr,camera_extrinsics)
-                    poses[k-1] = np.linalg.inv(poses[k-1])
-                    poses[k-1] = np.dot(poses[k-1],trans)
-                    pointcloud = np.dot( poses[k-1],pointcloud_base)
+                    trans = np.dot(np.linalg.inv(pose_extr),camera_extrinsics)
+                    pointcloud = np.dot(np.linalg.inv(np.dot(np.dot(pose_extr,poses[k-1]),trans)),pointcloud_base)
 
 
                 imgv = np.array(image)
