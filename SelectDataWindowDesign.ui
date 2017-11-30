@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>Wybór danych</string>
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout_2">
    <item>
@@ -26,7 +26,7 @@
       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="tab">
       <attribute name="title">
@@ -47,6 +47,9 @@
        <property name="contextMenuPolicy">
         <enum>Qt::ActionsContextMenu</enum>
        </property>
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&quot;OK&quot; - zapis zmian w obu zakładkach i wybór danych z projektu RobotCar DataSet do wyświetlenia.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
        </property>
@@ -66,6 +69,9 @@
          <height>31</height>
         </rect>
        </property>
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Przycisk &quot;Browse&quot;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
        <property name="text">
         <string>...</string>
        </property>
@@ -84,6 +90,9 @@
          <width>501</width>
          <height>27</height>
         </rect>
+       </property>
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Ścieżka do folderu sample.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
       </widget>
       <widget class="QLabel" name="label">
@@ -302,6 +311,9 @@
          <height>27</height>
         </rect>
        </property>
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Ścieżka do folderu extrinsic.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
       </widget>
       <widget class="QLineEdit" name="chooseModelsFolder">
        <property name="geometry">
@@ -312,6 +324,9 @@
          <height>27</height>
         </rect>
        </property>
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Ścieżka do folderu models.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
       </widget>
       <widget class="QToolButton" name="browseButton2">
        <property name="geometry">
@@ -321,6 +336,9 @@
          <width>31</width>
          <height>31</height>
         </rect>
+       </property>
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Przycisk &quot;Browse&quot;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="text">
         <string>...</string>
@@ -340,6 +358,9 @@
          <width>31</width>
          <height>31</height>
         </rect>
+       </property>
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Przycisk &quot;Browse&quot;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="text">
         <string>...</string>
@@ -511,7 +532,7 @@
        <property name="geometry">
         <rect>
          <x>0</x>
-         <y>20</y>
+         <y>10</y>
          <width>921</width>
          <height>20</height>
         </rect>
@@ -527,30 +548,39 @@
        <property name="geometry">
         <rect>
          <x>240</x>
-         <y>50</y>
+         <y>40</y>
          <width>501</width>
          <height>27</height>
         </rect>
        </property>
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Ścieżka do pliku z danymi z lidaru (w formacie csv).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
       </widget>
-      <widget class="QLineEdit" name="choosePoseData">
+      <widget class="QLineEdit" name="choosePoseDataVo">
        <property name="geometry">
         <rect>
          <x>240</x>
-         <y>190</y>
+         <y>170</y>
          <width>501</width>
          <height>27</height>
         </rect>
+       </property>
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Ścieżka do pliku pozycji (w formacie csv) wygenerowanym za pomocą odometrii wizyjnej.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
       </widget>
       <widget class="QToolButton" name="browseButton6">
        <property name="geometry">
         <rect>
          <x>750</x>
-         <y>190</y>
+         <y>170</y>
          <width>31</width>
          <height>31</height>
         </rect>
+       </property>
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Przycisk &quot;Browse&quot;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="text">
         <string>...</string>
@@ -566,10 +596,13 @@
        <property name="geometry">
         <rect>
          <x>750</x>
-         <y>220</y>
+         <y>200</y>
          <width>31</width>
          <height>31</height>
         </rect>
+       </property>
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Przycisk &quot;Browse&quot;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="text">
         <string>...</string>
@@ -585,23 +618,26 @@
        <property name="geometry">
         <rect>
          <x>50</x>
-         <y>190</y>
+         <y>170</y>
          <width>191</width>
          <height>20</height>
         </rect>
        </property>
        <property name="text">
-        <string>Plik pozycji:</string>
+        <string>Plik pozycji vo:</string>
        </property>
       </widget>
       <widget class="QToolButton" name="browseButton4">
        <property name="geometry">
         <rect>
          <x>750</x>
-         <y>50</y>
+         <y>40</y>
          <width>31</width>
          <height>31</height>
         </rect>
+       </property>
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Przycisk &quot;Browse&quot;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="text">
         <string>...</string>
@@ -613,34 +649,37 @@
         <enum>Qt::NoArrow</enum>
        </property>
       </widget>
-      <widget class="QLineEdit" name="choosePoseExtr">
+      <widget class="QLineEdit" name="choosePoseExtrVo">
        <property name="geometry">
         <rect>
          <x>240</x>
-         <y>220</y>
+         <y>200</y>
          <width>501</width>
          <height>27</height>
         </rect>
+       </property>
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Ścieżka do pliku extrinsic (w formacie txt) określającego orientację układu współrzędnych vo względem układu bazowego.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
       </widget>
       <widget class="QLabel" name="label_11">
        <property name="geometry">
         <rect>
          <x>50</x>
-         <y>220</y>
-         <width>171</width>
+         <y>200</y>
+         <width>191</width>
          <height>20</height>
         </rect>
        </property>
        <property name="text">
-        <string>Plik extrinsic:</string>
+        <string>Plik extrinsic vo:</string>
        </property>
       </widget>
       <widget class="QLabel" name="label_12">
        <property name="geometry">
         <rect>
          <x>50</x>
-         <y>50</y>
+         <y>40</y>
          <width>151</width>
          <height>20</height>
         </rect>
@@ -653,7 +692,7 @@
        <property name="geometry">
         <rect>
          <x>50</x>
-         <y>80</y>
+         <y>70</y>
          <width>151</width>
          <height>20</height>
         </rect>
@@ -666,10 +705,13 @@
        <property name="geometry">
         <rect>
          <x>750</x>
-         <y>80</y>
+         <y>70</y>
          <width>31</width>
          <height>31</height>
         </rect>
+       </property>
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Przycisk &quot;Browse&quot;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="text">
         <string>...</string>
@@ -685,17 +727,20 @@
        <property name="geometry">
         <rect>
          <x>240</x>
-         <y>80</y>
+         <y>70</y>
          <width>501</width>
          <height>27</height>
         </rect>
+       </property>
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Ścieżka do pliku extrinsic (w formacie txt) określającego orientację bazowego układu współrzędnych.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
       </widget>
       <widget class="QLabel" name="label_14">
        <property name="geometry">
         <rect>
          <x>0</x>
-         <y>160</y>
+         <y>140</y>
          <width>921</width>
          <height>20</height>
         </rect>
@@ -711,14 +756,17 @@
        <property name="geometry">
         <rect>
          <x>240</x>
-         <y>310</y>
+         <y>340</y>
          <width>131</width>
          <height>27</height>
         </rect>
        </property>
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Wybór danych do wygenerowania pliku pozycji pointclouda.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
        <item>
         <property name="text">
-         <string>gps+imu</string>
+         <string/>
         </property>
        </item>
        <item>
@@ -726,12 +774,22 @@
          <string>vo</string>
         </property>
        </item>
+       <item>
+        <property name="text">
+         <string>vo + imu</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>gps + imu</string>
+        </property>
+       </item>
       </widget>
       <widget class="QLabel" name="label_29">
        <property name="geometry">
         <rect>
          <x>50</x>
-         <y>310</y>
+         <y>340</y>
          <width>151</width>
          <height>20</height>
         </rect>
@@ -755,6 +813,9 @@
        <property name="contextMenuPolicy">
         <enum>Qt::ActionsContextMenu</enum>
        </property>
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&quot;OK&quot; - zapis zmian w obu zakładkach i wybór własnych danych do wyświetlenia.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
        </property>
@@ -769,7 +830,7 @@
        <property name="geometry">
         <rect>
          <x>50</x>
-         <y>350</y>
+         <y>380</y>
          <width>151</width>
          <height>20</height>
         </rect>
@@ -782,7 +843,7 @@
        <property name="geometry">
         <rect>
          <x>240</x>
-         <y>350</y>
+         <y>380</y>
          <width>101</width>
          <height>22</height>
         </rect>
@@ -795,7 +856,7 @@
        <property name="geometry">
         <rect>
          <x>50</x>
-         <y>110</y>
+         <y>100</y>
          <width>171</width>
          <height>17</height>
         </rect>
@@ -808,10 +869,13 @@
        <property name="geometry">
         <rect>
          <x>240</x>
-         <y>110</y>
+         <y>100</y>
          <width>181</width>
          <height>27</height>
         </rect>
+       </property>
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Czas służacy do synchronizacji danych z lidaru i pliku pozycji. Określa ile początkowych ms danych ma zostać pominiętych podczas wyświetlania danych z lidaru.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="text">
         <string/>
@@ -821,7 +885,7 @@
        <property name="geometry">
         <rect>
          <x>50</x>
-         <y>250</y>
+         <y>290</y>
          <width>161</width>
          <height>17</height>
         </rect>
@@ -834,10 +898,13 @@
        <property name="geometry">
         <rect>
          <x>240</x>
-         <y>250</y>
+         <y>290</y>
          <width>181</width>
          <height>27</height>
         </rect>
+       </property>
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Czas służacy do synchronizacji danych z lidaru i pliku pozycji. Określa ile początkowych ms danych ma zostać pominiętych podczas generowania pliku pozycji pointclouda.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="text">
         <string/>
@@ -847,7 +914,7 @@
        <property name="geometry">
         <rect>
          <x>50</x>
-         <y>400</y>
+         <y>430</y>
          <width>111</width>
          <height>17</height>
         </rect>
@@ -863,7 +930,7 @@
        <property name="geometry">
         <rect>
          <x>50</x>
-         <y>430</y>
+         <y>460</y>
          <width>161</width>
          <height>17</height>
         </rect>
@@ -879,7 +946,7 @@
        <property name="geometry">
         <rect>
          <x>240</x>
-         <y>430</y>
+         <y>460</y>
          <width>181</width>
          <height>27</height>
         </rect>
@@ -892,20 +959,20 @@
        <property name="geometry">
         <rect>
          <x>240</x>
-         <y>400</y>
+         <y>430</y>
          <width>181</width>
          <height>27</height>
         </rect>
        </property>
        <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Czas pomiaru z lidaru od którego zaczyna się budowanie pointcloudu, relatywny do pierwszego pomiaru z lidaru&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Czas pomiaru z lidaru od którego zaczyna się budowanie pointcloudu, relatywny do pierwszego pomiaru z lidaru.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
       </widget>
       <widget class="QCheckBox" name="clearRoll">
        <property name="geometry">
         <rect>
          <x>390</x>
-         <y>350</y>
+         <y>380</y>
          <width>81</width>
          <height>22</height>
         </rect>
@@ -917,8 +984,8 @@
       <widget class="QCheckBox" name="clearPitch">
        <property name="geometry">
         <rect>
-         <x>510</x>
-         <y>350</y>
+         <x>520</x>
+         <y>380</y>
          <width>101</width>
          <height>22</height>
         </rect>
@@ -930,8 +997,8 @@
       <widget class="QLineEdit" name="skalaVO">
        <property name="geometry">
         <rect>
-         <x>510</x>
-         <y>310</y>
+         <x>490</x>
+         <y>340</y>
          <width>111</width>
          <height>27</height>
         </rect>
@@ -943,8 +1010,8 @@
       <widget class="QLabel" name="label_38">
        <property name="geometry">
         <rect>
-         <x>440</x>
-         <y>310</y>
+         <x>420</x>
+         <y>340</y>
          <width>91</width>
          <height>20</height>
         </rect>
@@ -957,7 +1024,7 @@
        <property name="geometry">
         <rect>
          <x>0</x>
-         <y>490</y>
+         <y>510</y>
          <width>921</width>
          <height>20</height>
         </rect>
@@ -973,10 +1040,13 @@
        <property name="geometry">
         <rect>
          <x>790</x>
-         <y>520</y>
+         <y>540</y>
          <width>31</width>
          <height>31</height>
         </rect>
+       </property>
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Przycisk &quot;Browse&quot;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="text">
         <string>...</string>
@@ -992,7 +1062,7 @@
        <property name="geometry">
         <rect>
          <x>50</x>
-         <y>520</y>
+         <y>540</y>
          <width>121</width>
          <height>20</height>
         </rect>
@@ -1005,17 +1075,20 @@
        <property name="geometry">
         <rect>
          <x>280</x>
-         <y>520</y>
+         <y>540</y>
          <width>501</width>
          <height>27</height>
         </rect>
+       </property>
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Ścieżka do folderu ze zdjęciami.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
       </widget>
       <widget class="QLabel" name="label_61">
        <property name="geometry">
         <rect>
          <x>50</x>
-         <y>550</y>
+         <y>570</y>
          <width>201</width>
          <height>17</height>
         </rect>
@@ -1037,7 +1110,7 @@
        <property name="geometry">
         <rect>
          <x>280</x>
-         <y>550</y>
+         <y>570</y>
          <width>181</width>
          <height>27</height>
         </rect>
@@ -1053,10 +1126,13 @@
        <property name="geometry">
         <rect>
          <x>520</x>
-         <y>560</y>
+         <y>590</y>
          <width>211</width>
          <height>22</height>
         </rect>
+       </property>
+       <property name="toolTip">
+        <string/>
        </property>
        <property name="text">
         <string>Nałóż punkty 3D na obraz</string>
@@ -1069,7 +1145,7 @@
        <property name="geometry">
         <rect>
          <x>280</x>
-         <y>580</y>
+         <y>600</y>
          <width>181</width>
          <height>27</height>
         </rect>
@@ -1082,7 +1158,7 @@
        <property name="geometry">
         <rect>
          <x>50</x>
-         <y>580</y>
+         <y>600</y>
          <width>201</width>
          <height>17</height>
         </rect>
@@ -1092,6 +1168,131 @@
        </property>
        <property name="text">
         <string>Czas ostatniego zdjęcia [ms]:</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_39">
+       <property name="geometry">
+        <rect>
+         <x>650</x>
+         <y>340</y>
+         <width>91</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Beta:</string>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="beta">
+       <property name="geometry">
+        <rect>
+         <x>700</x>
+         <y>340</y>
+         <width>111</width>
+         <height>27</height>
+        </rect>
+       </property>
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Współczynnik wzmocnienia służący do strojenia filtru Madgwicka.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_55">
+       <property name="geometry">
+        <rect>
+         <x>50</x>
+         <y>230</y>
+         <width>191</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Plik pozycji imu:</string>
+       </property>
+      </widget>
+      <widget class="QToolButton" name="browseButton9">
+       <property name="geometry">
+        <rect>
+         <x>750</x>
+         <y>230</y>
+         <width>31</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Przycisk &quot;Browse&quot;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+       <property name="text">
+        <string>...</string>
+       </property>
+       <property name="toolButtonStyle">
+        <enum>Qt::ToolButtonIconOnly</enum>
+       </property>
+       <property name="arrowType">
+        <enum>Qt::NoArrow</enum>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="choosePoseDataImu">
+       <property name="geometry">
+        <rect>
+         <x>240</x>
+         <y>230</y>
+         <width>501</width>
+         <height>27</height>
+        </rect>
+       </property>
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Ścieżka do pliku pozycji (w formacie csv) wygenerowanym na podstawie danych z gps-a i jednostki imu &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="choosePoseExtrImu">
+       <property name="geometry">
+        <rect>
+         <x>240</x>
+         <y>260</y>
+         <width>501</width>
+         <height>27</height>
+        </rect>
+       </property>
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Ścieżka do pliku extrinsic (w formacie txt) określającego orientację układu współrzędnych imu względem układu bazowego.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+      </widget>
+      <widget class="QToolButton" name="browseButton10">
+       <property name="geometry">
+        <rect>
+         <x>750</x>
+         <y>260</y>
+         <width>31</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Przycisk &quot;Browse&quot;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+       <property name="text">
+        <string>...</string>
+       </property>
+       <property name="toolButtonStyle">
+        <enum>Qt::ToolButtonIconOnly</enum>
+       </property>
+       <property name="arrowType">
+        <enum>Qt::NoArrow</enum>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_56">
+       <property name="geometry">
+        <rect>
+         <x>50</x>
+         <y>260</y>
+         <width>191</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Plik extrinsic imu:</string>
        </property>
       </widget>
      </widget>
@@ -1108,8 +1309,8 @@
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>632</x>
-     <y>590</y>
+     <x>691</x>
+     <y>690</y>
     </hint>
     <hint type="destinationlabel">
      <x>595</x>
@@ -1124,8 +1325,8 @@
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>755</x>
-     <y>590</y>
+     <x>766</x>
+     <y>690</y>
     </hint>
     <hint type="destinationlabel">
      <x>720</x>
@@ -1140,8 +1341,8 @@
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>691</x>
-     <y>620</y>
+     <x>702</x>
+     <y>690</y>
     </hint>
     <hint type="destinationlabel">
      <x>638</x>
@@ -1156,8 +1357,8 @@
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>751</x>
-     <y>620</y>
+     <x>762</x>
+     <y>690</y>
     </hint>
     <hint type="destinationlabel">
      <x>715</x>
@@ -1172,12 +1373,12 @@
    <slot>setChecked(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>320</x>
-     <y>501</y>
+     <x>331</x>
+     <y>531</y>
     </hint>
     <hint type="destinationlabel">
-     <x>162</x>
-     <y>501</y>
+     <x>173</x>
+     <y>531</y>
     </hint>
    </hints>
   </connection>
@@ -1188,12 +1389,12 @@
    <slot>setDisabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>335</x>
-     <y>501</y>
+     <x>346</x>
+     <y>531</y>
     </hint>
     <hint type="destinationlabel">
-     <x>163</x>
-     <y>501</y>
+     <x>174</x>
+     <y>531</y>
     </hint>
    </hints>
   </connection>
@@ -1204,12 +1405,12 @@
    <slot>setDisabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>361</x>
-     <y>493</y>
+     <x>372</x>
+     <y>531</y>
     </hint>
     <hint type="destinationlabel">
-     <x>370</x>
-     <y>531</y>
+     <x>381</x>
+     <y>571</y>
     </hint>
    </hints>
   </connection>

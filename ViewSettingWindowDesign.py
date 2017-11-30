@@ -53,7 +53,7 @@ class Ui_Dialog(object):
         QtCore.QMetaObject.connectSlotsByName(Dialog)
 
     def retranslateUi(self, Dialog):
-        Dialog.setWindowTitle(_translate("Dialog", "Dialog", None))
+        Dialog.setWindowTitle(_translate("Dialog", "Ustawienia wyświetlania", None))
         self.checkBoxUW.setText(_translate("Dialog", "Początek układu współrzędnych", None))
         self.checkBoxPixel.setText(_translate("Dialog", "Tryb pikselowy", None))
         self.label_12.setText(_translate("Dialog", "Wielkość punktow", None))

@@ -85,7 +85,7 @@ def interpolate_ins_poses(ins_path, pose_timestamps, origin_timestamp, czy_custo
             timestamp = int(float(row[0]))
             ins_timestamps.append(timestamp)
 
-            if czy_custom != 2:
+            if czy_custom != 5:
                 xyzrpy = [float(v) for v in row[1:4]] + [float(v) for v in row[-3:]]
             else:
                 xyzrpy = [float(v) for v in row[5:8]] + [float(v) for v in row[-3:]]

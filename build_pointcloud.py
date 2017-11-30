@@ -48,21 +48,15 @@ def build_pointcloud(lidar_dir, poses_file, extrinsics_dir, start_time, end_time
         origin_time = start_time
 
 
-    try:
-        lidar = re.search('(lms_front|lms_rear|ldmrs)', lidar_dir).group(0)
-        timestamps_path = os.path.join(lidar_dir, os.pardir, lidar + '.timestamps')
-    except:
-        timestamps_path = os.path.split(lidar_dir)[0] + '/plik.timestamps'
-        lidar = 'lms_front'
+    lidar = re.search('(lms_front|lms_rear|ldmrs)', lidar_dir).group(0)
+    timestamps_path = os.path.join(lidar_dir, os.pardir, lidar + '.timestamps')
+
 
 
     timestamps = []
     with open(timestamps_path) as timestamps_file:
         for line in timestamps_file:
-            try:
-                timestamp = int(line.split('\n\r')[0])
-            except:
-                timestamp = int(line.split(' ')[0])
+            timestamp = int(line.split(' ')[0])
             if start_time <= timestamp <= end_time:
                 timestamps.append(timestamp)
 
@@ -74,10 +68,7 @@ def build_pointcloud(lidar_dir, poses_file, extrinsics_dir, start_time, end_time
         extrinsics = next(extrinsics_file)
     G_posesource_laser = build_se3_transform([float(x) for x in extrinsics.split(' ')])
 
-    try:
-        poses_type = re.search('(vo|ins)\.csv', poses_file).group(1)
-    except:
-        pass
+    poses_type = re.search('(vo|ins)\.csv', poses_file).group(1)
 
     if poses_type == 'ins':
         with open(os.path.join(extrinsics_dir, 'ins.txt')) as extrinsics_file:
@@ -86,7 +77,7 @@ def build_pointcloud(lidar_dir, poses_file, extrinsics_dir, start_time, end_time
             G_posesource_laser = np.linalg.solve(build_se3_transform([float(x) for x in extrinsics.split(' ')]),
                                                      G_posesource_laser)
 
-        poses = interpolate_ins_poses(poses_file, timestamps, origin_time,2)   #jeśli pose_kind == 2 to z projektu RCDS
+        poses = interpolate_ins_poses(poses_file, timestamps, origin_time, 5)   #jeśli pose_kind == 5 to z projektu RCDS
     else:
         # sensor is VO, which is located at the main vehicle frame
         pose_extr = np.array([1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1])
@@ -124,9 +115,9 @@ def build_pointcloud(lidar_dir, poses_file, extrinsics_dir, start_time, end_time
     if pointcloud.shape[1] == 0:
         raise IOError("Could not find scan files for given time range in directory " + lidar_dir)
 
-
-
     return pointcloud, reflectance
+
+
 
 def build_pointcloud_nasze(lidar_dir, poses_file, extrinsics_dir, start_time, end_time, origin_time=-1, extr_pose=0, pose_kind=3):
     if origin_time < 0:

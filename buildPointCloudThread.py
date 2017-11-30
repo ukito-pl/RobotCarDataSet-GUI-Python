@@ -4,7 +4,7 @@ from build_pointcloud import *
 
 
 class BuildPointcloudThread(QThread):
-    def __init__(self,lidar_dir, poses_file_dir, extrinsics_dir, start_time, end_time, origin_time=-1, extr_pose=0, pose_kind=2):
+    def __init__(self,lidar_dir, poses_file_dir, extrinsics_dir, start_time, end_time, origin_time=-1, extr_pose=0, pose_kind=5):
         QThread.__init__(self)
         self.lidar_dir = lidar_dir
         self.poses_file_dir = poses_file_dir
@@ -19,7 +19,7 @@ class BuildPointcloudThread(QThread):
 
     def run(self):
 
-        if self.pose_kind == 2:
+        if self.pose_kind == 5:
             pointcloud, reflectance = build_pointcloud(self.lidar_dir, self.poses_file_dir, self.extrinsics_dir, self.start_time, self.end_time,self.origin_time)
         else:
             pointcloud, reflectance = build_pointcloud_nasze(self.lidar_dir, self.poses_file_dir, self.extrinsics_dir,
