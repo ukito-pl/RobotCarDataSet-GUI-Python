@@ -824,15 +824,17 @@ class Application(QtGui.QMainWindow, MainWindowDesign.Ui_MainWindow):
         dane_imu = []
         for i in range(len(euler)):
             if j >= 11:
-                dane_imu.append([euler[i][0], euler[i][2], euler[i][1]])
+                dane_imu.append([euler[i][1], euler[i][2]+2.1, -euler[i][0]])##tutaj zmieniaj żeby pasowało, zwłaszcza drugi
+                                                                            #  element wektora, bo to jest yaw,
+                                                                            #  dla 9 przejazdu około dodaj 2.1, dla 12 około 3.14
                 j = 0
             j = j + 1
         if clear_roll == True:
             for i in range(len(dane_imu)):
-                dane_imu[i][0] = 0
+                dane_imu[i][2] = 0
         if clear_pitch == True:
             for i in range(len(dane_imu)):
-                dane_imu[i][2] = 0
+                dane_imu[i][0] = 0
 
 
         # stworzenie poses i obciecie ewentualnych poczatkowycyh pomiarow
@@ -1448,6 +1450,15 @@ class Application(QtGui.QMainWindow, MainWindowDesign.Ui_MainWindow):
             else:
                 model = SimpleCustomCameraModel("camera_models/my_camera.txt")
                 camera_extr_path = "extrinsics/camera_extr.txt"
+                if pose_kind == 1:
+                    dir_pose_extr = dir_pose_extr_vo
+                    dir_pose_data = dir_pose_data_vo
+                elif pose_kind == 2:
+                    dir_pose_extr = dir_pose_extr_vo
+                    dir_pose_data = dir_pose_data_vo
+                elif pose_kind == 3:
+                    dir_pose_extr = dir_pose_extr_imu
+                    dir_pose_data = dir_pose_data_imu
                 self.imageViewThread = ViewImagesThreadCustom(str(dir_image_custom), 200, int(start_time_custom)+int(img_start_time_custom),
                                                               int(start_time_custom)+int(img_end_time_custom), True, self.pointcloud, model,
                                                               camera_extr_path, str(dir_pose_data),str(dir_pose_extr))
@@ -1474,6 +1485,8 @@ class Application(QtGui.QMainWindow, MainWindowDesign.Ui_MainWindow):
 
 
     def build_pointcloud(self):
+        self.pointcloudButton.setEnabled(False)
+        self.pointcloudButton.setText("Budowanie...")
         if sdk:
             self.new_thread = BuildPointcloudThread(str(dir_lidar),
                                                     str(dir_ins),
@@ -1484,22 +1497,24 @@ class Application(QtGui.QMainWindow, MainWindowDesign.Ui_MainWindow):
             if pose_kind == 1:
                 self.marek_wersja_1()
                 dir_pose_extr = dir_pose_extr_vo
+                dir_pose_data = dir_pose_data_vo
             elif pose_kind == 2:
                 self.vo_imu()
                 dir_pose_extr = dir_pose_extr_vo
+                dir_pose_data = dir_pose_data_vo
             elif pose_kind == 3:
                 self.madgwick_gyro_akc()
                 dir_pose_extr = dir_pose_extr_imu
+                dir_pose_data = dir_pose_data_imu
             self.new_thread = BuildPointcloudThread(str(dir_lidar_data_custom),
-                                                    str(dir_pose_data_vo),
+                                                    str(dir_pose_data),
                                                     str(dir_lidar_extr),
                                                     int(start_time_custom)*1000, int(end_time_custom)*1000, -1, str(dir_pose_extr), int(pose_kind))
 
         self.connect(self.new_thread, SIGNAL("drawPointcloud(PyQt_PyObject)"), self.draw_pointcloud)
         self.connect(self.new_thread, SIGNAL("update_progressbar(PyQt_PyObject"),self.update_progressbar)
         self.new_thread.start()
-        self.pointcloudButton.setEnabled(False)
-        self.pointcloudButton.setText("Budowanie...")
+
 
 
     def draw_pointcloud(self, pointcloud):
