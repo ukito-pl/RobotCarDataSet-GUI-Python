@@ -504,6 +504,7 @@ class Application(QtGui.QMainWindow, MainWindowDesign.Ui_MainWindow):
         self.imageView.ui.histogram.item.close()
         self.imageView.ui.histogram.setFixedWidth(1)
 
+
         try:
             SettingsWindow().save_dialog2()                         # Zapisanie ustawień defaultSettings.txt
         except:
@@ -650,6 +651,8 @@ class Application(QtGui.QMainWindow, MainWindowDesign.Ui_MainWindow):
                 start = True
                 akc = [-(float(line.split(',')[7]))] + [-(float(line.split(',')[6]))] + [float(line.split(',')[8])]
                 gyro = [-(float(line.split(',')[11]))] + [-(float(line.split(',')[10]))] + [float(line.split(',')[12])]
+                if gyro[0] > pi or gyro[1] > pi or gyro[2] > pi:
+                    gyro = [0,0,0]
                 dane_akc.append(akc)
                 dane_gyro.append(gyro)
             if start == True and int(id) != 1 and line.split(',')[6:9] != [] and line.split(',')[
@@ -762,7 +765,7 @@ class Application(QtGui.QMainWindow, MainWindowDesign.Ui_MainWindow):
         dane_xyz = []
         dane_imu = []
         poses_times = []
-        sensors_file = open(dir_pose_data_vo, 'r')  ##ścieżka do pliku vo
+        sensors_file = open(dir_pose_data_vo, 'r')  # ścieżka do pliku vo
         for line in sensors_file:
             try:
                 vector = [float(x) for x in line.split(',')[0:13]]
@@ -796,6 +799,8 @@ class Application(QtGui.QMainWindow, MainWindowDesign.Ui_MainWindow):
                 start = True
                 akc = [-(float(line.split(',')[7]))] + [-(float(line.split(',')[6]))] + [float(line.split(',')[8])]
                 gyro = [-(float(line.split(',')[11]))] + [-(float(line.split(',')[10]))] + [float(line.split(',')[12])]
+                if gyro[0] > pi or gyro[1] > pi or gyro[2] > pi:
+                    gyro = [0,0,0]
                 dane_akc.append(akc)
                 dane_gyro.append(gyro)
             if start == True and int(id) != 1 and line.split(',')[6:9] != [] and line.split(',')[
@@ -820,13 +825,12 @@ class Application(QtGui.QMainWindow, MainWindowDesign.Ui_MainWindow):
         pyplot.grid()
         pyplot.show()
 
+
         j = 0
         dane_imu = []
         for i in range(len(euler)):
             if j >= 11:
-                dane_imu.append([euler[i][1], euler[i][2]+3.14, -euler[i][0]])##tutaj zmieniaj żeby pasowało, zwłaszcza drugi
-                                                                            #  element wektora, bo to jest yaw,
-                                                                            #  dla 9 przejazdu około dodaj 2.1, dla 12 około 3.14
+                dane_imu.append([euler[i][1], euler[i][2], -euler[i][0]])
                 j = 0
             j = j + 1
         if clear_roll == True:
@@ -1368,6 +1372,7 @@ class Application(QtGui.QMainWindow, MainWindowDesign.Ui_MainWindow):
 #SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS
 
     def tworz_pliki_z_lidaru(self):
+        global colors
         # Tworzy plik z kolejnymi scanami z lidaru oraz plik timestampow odpowiadający kolejnym scanom
 
 
@@ -1401,14 +1406,17 @@ class Application(QtGui.QMainWindow, MainWindowDesign.Ui_MainWindow):
         time_file.close()
         print "Utworzono plik lidar.timestamps"
 
-        # obciecie ewentualnych scanów i stworzenie pliku
+        # obcięcie ewentualnych skanów i stworzenie pliku
         dane_lidar = []
+        dane_reflectanse = []
         lidar_data_file = open(dir_lidar_data_custom, 'r')
         for line in lidar_data_file:
             if usunieto < 0:
                 try:
-                    one_scan = [float(x) for x in line.split(',')[11:282]]
-                    dane_lidar.append(one_scan)
+                    one_scan_lid = [float(x) for x in line.split(',')[11:282]]
+                    one_scan_ref = [float(x) for x in line.split(',')[282:553]]
+                    dane_lidar.append(one_scan_lid)
+                    dane_reflectanse.append(one_scan_ref)
                 except:
                     pass
             else:
@@ -1422,6 +1430,18 @@ class Application(QtGui.QMainWindow, MainWindowDesign.Ui_MainWindow):
         f_csv.writerows(dane_do_zapisania)
         f.close()
         print "Utworzono plik dane_odleglosci_lidar.csv"
+
+        colors = []
+        maks_ref = max(max(dane_reflectanse))
+        for i in range(len(dane_reflectanse)):
+            for j in range(0, 271, 1):
+                if (dane_reflectanse[i][j] / maks_ref) <= 0.35:
+                    colors.append([0,1,0,1])
+                elif (dane_reflectanse[i][j] / maks_ref) >=0.65 :
+                    colors.append([1,0,0,1])
+                else:
+                    colors.append([0,0,1,1])
+        colors = np.array(colors)
 
     def view_images(self):
         if sdk:
@@ -1483,7 +1503,6 @@ class Application(QtGui.QMainWindow, MainWindowDesign.Ui_MainWindow):
 
 
 
-
     def build_pointcloud(self):
         self.pointcloudButton.setEnabled(False)
         self.pointcloudButton.setText("Budowanie...")
@@ -1526,14 +1545,20 @@ class Application(QtGui.QMainWindow, MainWindowDesign.Ui_MainWindow):
         pointcloud = pointcloud[0:3, :].transpose()
         print pointcloud
 
-        plot_item = gl.GLScatterPlotItem(pos=pointcloud, size=(float(points_size)), color=[0.7, 0.7, 0.7, 1], pxMode=pixel_mode)
-
-        #wyczyść obszar rysowania
+        # wyczyść obszar rysowania
         if self.pointcloudArea.items.__len__() > 0:
-            for i in range(0,self.pointcloudArea.items.__len__()):
+            for i in range(0, self.pointcloudArea.items.__len__()):
                 self.pointcloudArea.items.__delitem__(0)
 
+
+        if points_colour == True:
+            plot_item = gl.GLScatterPlotItem(pos=pointcloud, size=(float(points_size)), color=colors, pxMode=pixel_mode)
+        else:
+            plot_item = gl.GLScatterPlotItem(pos=pointcloud, size=(float(points_size)), color=[0.7,0.7,0.7,1], pxMode=pixel_mode)
         self.pointcloudArea.addItem(plot_item)
+
+
+
         if uw == True:
             ukl_wsp_line_length = 3
             ukl_wsp_line_width = 4
@@ -1552,7 +1577,7 @@ class Application(QtGui.QMainWindow, MainWindowDesign.Ui_MainWindow):
 
 
 def main():
-    pg.setConfigOptions(imageAxisOrder='row-major')
+    #pg.setConfigOptions(imageAxisOrder='col-major')
     app = QtGui.QApplication(sys.argv)  # A new instance of QApplication
     form = Application()                # We set the form to be our Application (design)
     form.show()                         # Show the form
