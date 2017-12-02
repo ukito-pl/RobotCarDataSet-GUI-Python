@@ -34,17 +34,14 @@ class Ui_Dialog(object):
         self.checkBoxUW = QtGui.QCheckBox(Dialog)
         self.checkBoxUW.setGeometry(QtCore.QRect(70, 40, 251, 22))
         self.checkBoxUW.setObjectName(_fromUtf8("checkBoxUW"))
-        self.checkBoxPixel = QtGui.QCheckBox(Dialog)
-        self.checkBoxPixel.setGeometry(QtCore.QRect(70, 70, 131, 22))
-        self.checkBoxPixel.setObjectName(_fromUtf8("checkBoxPixel"))
         self.choosePointsSize = QtGui.QLineEdit(Dialog)
-        self.choosePointsSize.setGeometry(QtCore.QRect(210, 130, 41, 27))
+        self.choosePointsSize.setGeometry(QtCore.QRect(210, 100, 41, 27))
         self.choosePointsSize.setObjectName(_fromUtf8("choosePointsSize"))
         self.label_12 = QtGui.QLabel(Dialog)
-        self.label_12.setGeometry(QtCore.QRect(70, 130, 151, 20))
+        self.label_12.setGeometry(QtCore.QRect(70, 100, 151, 20))
         self.label_12.setObjectName(_fromUtf8("label_12"))
         self.checkBoxColors = QtGui.QCheckBox(Dialog)
-        self.checkBoxColors.setGeometry(QtCore.QRect(70, 100, 161, 22))
+        self.checkBoxColors.setGeometry(QtCore.QRect(70, 70, 161, 22))
         self.checkBoxColors.setObjectName(_fromUtf8("checkBoxColors"))
 
         self.retranslateUi(Dialog)
@@ -55,7 +52,6 @@ class Ui_Dialog(object):
     def retranslateUi(self, Dialog):
         Dialog.setWindowTitle(_translate("Dialog", "Ustawienia wyświetlania", None))
         self.checkBoxUW.setText(_translate("Dialog", "Początek układu współrzędnych", None))
-        self.checkBoxPixel.setText(_translate("Dialog", "Tryb pikselowy", None))
         self.label_12.setText(_translate("Dialog", "Wielkość punktow", None))
         self.checkBoxColors.setText(_translate("Dialog", "Kolorowe punkty", None))
 

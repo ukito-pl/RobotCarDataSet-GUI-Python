@@ -17,7 +17,53 @@ import csv
 import numpy as np
 import numpy.matlib as ml
 from transform import *
-#import pydevd
+import pydevd
+
+def interpolate_poses_simple(path,requested_timestamps,origin_timestamp):
+    with open(path) as ins_file:
+        ins_reader = csv.reader(ins_file)
+        headers = next(ins_file)
+
+        pose_timestamps = [0]
+        xyzrpy = []
+
+        upper_timestamp = max(max(requested_timestamps), origin_timestamp)
+
+        for row in ins_reader:
+            timestamp = int(float(row[0]))
+            pose_timestamps.append(timestamp)
+
+            vector = [float(v) for v in row[1:4]] + [float(v) for v in row[-3:]]
+            xyzrpy.append([float(v) for v in row[1:4]] + [float(v) for v in row[-3:]])
+
+
+
+            if timestamp >= upper_timestamp:
+                break
+        start = False
+        poses = []
+        j = 0
+        for i in range(0,len(requested_timestamps)):
+            while not (pose_timestamps[j]<= requested_timestamps[i] <= pose_timestamps[j+1]):
+                j = j+1
+
+            y0 = np.array(xyzrpy[j])
+            y1 = np.array(xyzrpy[j+1])
+            x0 = float(pose_timestamps[j])
+            x1 = float(pose_timestamps[j+1])
+            x = float(requested_timestamps[i])
+            pose = y0+(y1-y0)/(x1-x0)*(x-x0)
+            if requested_timestamps[i] >= origin_timestamp and start is False:
+                start = True
+                origin_pose = pose
+            pose_matrix = build_se3_transform(pose-origin_pose)
+            poses.append(pose_matrix)
+
+            if j+3>= len(pose_timestamps):
+                break
+
+    return poses
+
 
 def interpolate_vo_poses(vo_path, pose_timestamps, origin_timestamp):
     """Interpolate poses from visual odometry.

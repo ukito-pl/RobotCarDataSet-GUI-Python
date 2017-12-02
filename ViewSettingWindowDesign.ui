@@ -42,24 +42,11 @@
     <string>Początek układu współrzędnych</string>
    </property>
   </widget>
-  <widget class="QCheckBox" name="checkBoxPixel">
-   <property name="geometry">
-    <rect>
-     <x>70</x>
-     <y>70</y>
-     <width>131</width>
-     <height>22</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Tryb pikselowy</string>
-   </property>
-  </widget>
   <widget class="QLineEdit" name="choosePointsSize">
    <property name="geometry">
     <rect>
      <x>210</x>
-     <y>130</y>
+     <y>100</y>
      <width>41</width>
      <height>27</height>
     </rect>
@@ -69,7 +56,7 @@
    <property name="geometry">
     <rect>
      <x>70</x>
-     <y>130</y>
+     <y>100</y>
      <width>151</width>
      <height>20</height>
     </rect>
@@ -82,7 +69,7 @@
    <property name="geometry">
     <rect>
      <x>70</x>
-     <y>100</y>
+     <y>70</y>
      <width>161</width>
      <height>22</height>
     </rect>

@@ -450,17 +450,17 @@ class SettingsWindow(QtGui.QDialog, ViewSettingWindowDesign.Ui_Dialog):
 
 
     def save_dialog2(self):
-        global uw, pixel_mode, points_colour, points_size
+        global uw, points_colour, points_size
 
         uw = self.checkBoxUW.isChecked()
-        pixel_mode = self.checkBoxPixel.isChecked()
+
         points_colour = self.checkBoxColors.isChecked()
         points_size = self.choosePointsSize.text()
 
         points_size = points_size.replace('\r', "").replace('\n', "")
 
         f = open('defaultSettings.txt', 'w')
-        lines = [str(uw), "\n", str(pixel_mode), "\n", str(points_colour), "\n", points_size]
+        lines = [str(uw), "\n", str(points_colour), "\n", points_size]
         f.writelines(lines)
         f.close()
 
@@ -471,10 +471,6 @@ class SettingsWindow(QtGui.QDialog, ViewSettingWindowDesign.Ui_Dialog):
         else:
             self.checkBoxUW.setChecked(False)
         if f.readline().replace('\n',"") == 'True':
-            self.checkBoxPixel.setChecked(True)
-        else:
-            self.checkBoxPixel.setChecked(False)
-        if f.readline().replace('\n',"") == 'True':
             self.checkBoxColors.setChecked(True)
         else:
             self.checkBoxColors.setChecked(False)
@@ -484,7 +480,6 @@ class SettingsWindow(QtGui.QDialog, ViewSettingWindowDesign.Ui_Dialog):
 
 class Application(QtGui.QMainWindow, MainWindowDesign.Ui_MainWindow):
     def __init__(self):
-        #pg.setConfigOptions(imageAxisOrder='row-major')
         # Using super allows us to
         # access variables, methods etc in the MainWindowDesign.py file
         super(self.__class__, self).__init__()
@@ -503,7 +498,6 @@ class Application(QtGui.QMainWindow, MainWindowDesign.Ui_MainWindow):
         #Ukryj histogram
         self.imageView.ui.histogram.item.close()
         self.imageView.ui.histogram.setFixedWidth(1)
-
 
         try:
             SettingsWindow().save_dialog2()                         # Zapisanie ustawień defaultSettings.txt
@@ -1433,14 +1427,19 @@ class Application(QtGui.QMainWindow, MainWindowDesign.Ui_MainWindow):
 
         colors = []
         maks_ref = max(max(dane_reflectanse))
+        min_ref = min(min(dane_reflectanse))
         for i in range(len(dane_reflectanse)):
             for j in range(0, 271, 1):
-                if (dane_reflectanse[i][j] / maks_ref) <= 0.35:
-                    colors.append([0,1,0,1])
-                elif (dane_reflectanse[i][j] / maks_ref) >=0.65 :
-                    colors.append([1,0,0,1])
-                else:
-                    colors.append([0,0,1,1])
+                d = dane_reflectanse[i][j] / maks_ref
+                rgb = np.array(colorsys.hsv_to_rgb(d, 1.0, 1.0))
+
+                colors.append([rgb[0]*255,rgb[1]*255,rgb[2]*255,1])
+                # if (dane_reflectanse[i][j] / maks_ref) <= 0.35:
+                #     colors.append([0,1,0,1])
+                # elif (dane_reflectanse[i][j] / maks_ref) >=0.65 :
+                #     colors.append([1,0,0,1])
+                # else:
+                #     colors.append([0,0,1,1])
         colors = np.array(colors)
 
     def view_images(self):
@@ -1552,9 +1551,9 @@ class Application(QtGui.QMainWindow, MainWindowDesign.Ui_MainWindow):
 
 
         if points_colour == True:
-            plot_item = gl.GLScatterPlotItem(pos=pointcloud, size=(float(points_size)), color=colors, pxMode=pixel_mode)
+            plot_item = gl.GLScatterPlotItem(pos=pointcloud, size=(float(points_size)), color=colors, pxMode=True)
         else:
-            plot_item = gl.GLScatterPlotItem(pos=pointcloud, size=(float(points_size)), color=[0.7,0.7,0.7,1], pxMode=pixel_mode)
+            plot_item = gl.GLScatterPlotItem(pos=pointcloud, size=(float(points_size)), color=[0.7,0.7,0.7,1], pxMode=True)
         self.pointcloudArea.addItem(plot_item)
 
 
@@ -1577,7 +1576,6 @@ class Application(QtGui.QMainWindow, MainWindowDesign.Ui_MainWindow):
 
 
 def main():
-    #pg.setConfigOptions(imageAxisOrder='col-major')
     app = QtGui.QApplication(sys.argv)  # A new instance of QApplication
     form = Application()                # We set the form to be our Application (design)
     form.show()                         # Show the form

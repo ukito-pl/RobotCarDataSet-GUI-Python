@@ -19,7 +19,7 @@ import numpy as np
 import csv
 from transform import *
 
-from interpolate_poses import interpolate_vo_poses, interpolate_ins_poses
+from interpolate_poses import *
 #import pydevd
 
 
@@ -80,7 +80,6 @@ def build_pointcloud(lidar_dir, poses_file, extrinsics_dir, start_time, end_time
         poses = interpolate_ins_poses(poses_file, timestamps, origin_time, 5)   #jeśli pose_kind == 5 to z projektu RCDS
     else:
         # sensor is VO, which is located at the main vehicle frame
-        pose_extr = np.array([1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1])
         poses = interpolate_vo_poses(poses_file, timestamps, origin_time)
     pointcloud = np.array([[0], [0], [0], [0]])
     if lidar == 'ldmrs':
@@ -143,7 +142,8 @@ def build_pointcloud_nasze(lidar_dir, poses_file, extrinsics_dir, start_time, en
             if start_time <= timestamp <= end_time:
                 timestamps.append(timestamp)
 
-    poses = interpolate_ins_poses('poses.csv', timestamps, origin_time, pose_kind)
+    #poses = interpolate_ins_poses('poses.csv', timestamps, origin_time, pose_kind)
+    poses = interpolate_poses_simple('poses.csv',timestamps,origin_time)
 
     pointcloud = np.array([[0], [0], [0],[0]])
     reflectance = np.empty((0))

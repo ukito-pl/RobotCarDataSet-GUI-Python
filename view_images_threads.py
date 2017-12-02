@@ -80,6 +80,7 @@ class ViewImagesThreadSDK(QThread):
                         u = int(uv[0, j])
                         v = int(uv[1, j])
                         imgv[v, u, :] = rgb * 255
+                    imgv = imgv.transpose((1, 0, 2))
                     images.append(imgv)
 
                     percent = float(i+1)/len(timestamps)*100
@@ -91,6 +92,7 @@ class ViewImagesThreadSDK(QThread):
                 image_path = os.path.join(self.dir_camera, str(timestamp) + '.png')
                 image = load_image(image_path,self.camera_model)
                 imgv = np.array(image)
+                imgv = imgv.transpose((1, 0, 2))
                 images.append(imgv)
                 percent = float(i + 1) / len(timestamps) * 100
                 self.emit(SIGNAL('update_progressbar(PyQt_PyObject)'), [2, percent])
@@ -135,6 +137,7 @@ class ViewImagesThreadCustom(QThread):
                     pass
                 if img:
                     imgv = np.array(img)
+                    imgv = imgv.transpose((1, 0, 2))
                     images.append(imgv)
 
                     p = p + 1
@@ -168,7 +171,8 @@ class ViewImagesThreadCustom(QThread):
                 i = i+ 1
 
             #pydevd.settrace()
-            poses = interpolate_ins_poses('poses.csv', timestamps, timestamps[0], 1)
+            #poses = interpolate_ins_poses('poses.csv', timestamps, timestamps[0], 1)
+            poses = interpolate_poses_simple('poses.csv', timestamps, timestamps[0])
 
             pointcloud = self.pointcloud
             pointcloud_base = pointcloud
@@ -183,7 +187,6 @@ class ViewImagesThreadCustom(QThread):
                     pass
 
                 if k > 0:
-                    #pydevd.settrace()
                     trans = np.linalg.solve( pose_extr,camera_extrinsics)
                     trans = np.dot(np.linalg.inv(pose_extr),camera_extrinsics)
                     pointcloud = np.dot(np.linalg.inv(np.dot(np.dot(pose_extr,poses[k-1]),trans)),pointcloud_base)
@@ -203,6 +206,7 @@ class ViewImagesThreadCustom(QThread):
                     u = int(uv[0, j])
                     v = int(uv[1, j])
                     imgv[v, u, :] = rgb * 255
+                imgv = imgv.transpose((1, 0, 2))
                 images.append(imgv)
                 k = k + 1
                 i = i + 1
