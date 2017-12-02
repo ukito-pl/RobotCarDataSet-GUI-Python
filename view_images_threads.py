@@ -5,7 +5,7 @@ from image import*
 import numpy as np
 from transform import*
 from interpolate_poses import*
-import pydevd
+#import pydevd
 import colorsys
 
 class ViewImagesThreadSDK(QThread):
@@ -124,19 +124,23 @@ class ViewImagesThreadCustom(QThread):
             p = 0
             i = self.start_time/self.delta_t
             for t in range(self.start_time,self.end_time,self.delta_t):
+                img = None
                 try:
                     plik = 'out%03d.png' % (i + 1)
                     img_path = os.path.join(self.images_path, plik)
                     img = Image.open(img_path)
-                    imgv = np.array(img)
-                    images.append(imgv)
-                    i = i + 1
-                    p = p + 1
-                    percent = float(p)/num_images*100
-                    self.emit(SIGNAL('update_progressbar(PyQt_PyObject)'), [2, percent])
+
 
                 except:
                     pass
+                if img:
+                    imgv = np.array(img)
+                    images.append(imgv)
+
+                    p = p + 1
+                    percent = float(p) / num_images * 100
+                    self.emit(SIGNAL('update_progressbar(PyQt_PyObject)'), [2, percent])
+                i = i + 1
         else:
             with open(self.camera_extr_path) as extrinsics_file:
                 extrinsics = [float(x) for x in next(extrinsics_file).split(' ')]

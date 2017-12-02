@@ -26,7 +26,7 @@
       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="currentIndex">
-      <number>1</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="tab">
       <attribute name="title">
@@ -92,7 +92,7 @@
         </rect>
        </property>
        <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Ścieżka do folderu sample.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Ścieżka do folderu zawierajacego wszystkie dane z jednego przejazdu.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
       </widget>
       <widget class="QLabel" name="label">
@@ -103,6 +103,9 @@
          <width>151</width>
          <height>20</height>
         </rect>
+       </property>
+       <property name="toolTip">
+        <string>Ścieżka do folderu zawierajacego wszystkie dane z jednego przejazdu.</string>
        </property>
        <property name="text">
         <string>Folder danych:</string>
@@ -285,6 +288,9 @@
          <height>20</height>
         </rect>
        </property>
+       <property name="toolTip">
+        <string>Ścieżka do folderu extrinsic.</string>
+       </property>
        <property name="text">
         <string>Folder extrinsic:</string>
        </property>
@@ -297,6 +303,9 @@
          <width>171</width>
          <height>20</height>
         </rect>
+       </property>
+       <property name="toolTip">
+        <string>Ścieżka do folderu models.</string>
        </property>
        <property name="text">
         <string>Folder modeli kamer:</string>
@@ -623,6 +632,9 @@
          <height>20</height>
         </rect>
        </property>
+       <property name="toolTip">
+        <string>Ścieżka do pliku pozycji (w formacie csv) wygenerowanym za pomocą odometrii wizyjnej.</string>
+       </property>
        <property name="text">
         <string>Plik pozycji vo:</string>
        </property>
@@ -671,6 +683,9 @@
          <height>20</height>
         </rect>
        </property>
+       <property name="toolTip">
+        <string>Ścieżka do pliku extrinsic (w formacie txt) określającego orientację układu współrzędnych vo względem układu bazowego.</string>
+       </property>
        <property name="text">
         <string>Plik extrinsic vo:</string>
        </property>
@@ -684,6 +699,9 @@
          <height>20</height>
         </rect>
        </property>
+       <property name="toolTip">
+        <string>Ścieżka do pliku z danymi z lidaru (w formacie csv).</string>
+       </property>
        <property name="text">
         <string>Plik lidaru:</string>
        </property>
@@ -696,6 +714,9 @@
          <width>151</width>
          <height>20</height>
         </rect>
+       </property>
+       <property name="toolTip">
+        <string>Ścieżka do pliku extrinsic (w formacie txt) określającego orientację układu lidaru względem układu bazowego.</string>
        </property>
        <property name="text">
         <string>Plik extrinsic:</string>
@@ -733,7 +754,7 @@
         </rect>
        </property>
        <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Ścieżka do pliku extrinsic (w formacie txt) określającego orientację bazowego układu współrzędnych.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Ścieżka do pliku extrinsic (w formacie txt) określającego orientację układu lidaru względem układu bazowego.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
       </widget>
       <widget class="QLabel" name="label_14">
@@ -861,6 +882,9 @@
          <height>17</height>
         </rect>
        </property>
+       <property name="toolTip">
+        <string>Czas służacy do synchronizacji danych z lidaru i pliku pozycji. Określa ile początkowych ms danych ma zostać pominiętych podczas wyświetlania danych z lidaru.</string>
+       </property>
        <property name="text">
         <string>Czas synchronizacji[ms]:</string>
        </property>
@@ -889,6 +913,9 @@
          <width>161</width>
          <height>17</height>
         </rect>
+       </property>
+       <property name="toolTip">
+        <string>Czas służacy do synchronizacji danych z lidaru i pliku pozycji. Określa ile początkowych ms danych ma zostać pominiętych podczas generowania pliku pozycji pointclouda.</string>
        </property>
        <property name="text">
         <string>Czas synchronizacji[ms]:</string>
@@ -1003,6 +1030,9 @@
          <height>27</height>
         </rect>
        </property>
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Współczynnik służący do zmiany globalnej skali trajektorii otrzymanej z odometrii wizyjnej. Każda współrzędna x,y,z trajektorii jest mnożona przez ten współczynnik.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
        <property name="text">
         <string/>
        </property>
@@ -1015,6 +1045,9 @@
          <width>91</width>
          <height>20</height>
         </rect>
+       </property>
+       <property name="toolTip">
+        <string>Współczynnik służący do zmiany globalnej skali trajektorii otrzymanej z odometrii wizyjnej. Każda współrzędna x,y,z trajektorii jest mnożona przez ten współczynnik.</string>
        </property>
        <property name="text">
         <string>Skala vo:</string>
@@ -1067,6 +1100,9 @@
          <height>20</height>
         </rect>
        </property>
+       <property name="toolTip">
+        <string>Ścieżka do folderu ze zdjęciami. Format nazwy zdjęć: &quot;out%03d.png', czyli np. out001.png</string>
+       </property>
        <property name="text">
         <string>Ścieżka do zdjęć:</string>
        </property>
@@ -1081,7 +1117,7 @@
         </rect>
        </property>
        <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Ścieżka do folderu ze zdjęciami.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Ścieżka do folderu ze zdjęciami. Format nazwy zdjęć: &amp;quot;out%03d.png', czyli np. out001.png&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
       </widget>
       <widget class="QLabel" name="label_61">
@@ -1208,6 +1244,9 @@
          <height>20</height>
         </rect>
        </property>
+       <property name="toolTip">
+        <string>Ścieżka do pliku pozycji (w formacie csv) wygenerowanym na podstawie danych z gps-a i jednostki imu </string>
+       </property>
        <property name="text">
         <string>Plik pozycji imu:</string>
        </property>
@@ -1290,6 +1329,9 @@
          <width>191</width>
          <height>20</height>
         </rect>
+       </property>
+       <property name="toolTip">
+        <string>Ścieżka do pliku extrinsic (w formacie txt) określającego orientację układu współrzędnych imu względem układu bazowego.</string>
        </property>
        <property name="text">
         <string>Plik extrinsic imu:</string>

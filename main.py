@@ -484,7 +484,7 @@ class SettingsWindow(QtGui.QDialog, ViewSettingWindowDesign.Ui_Dialog):
 
 class Application(QtGui.QMainWindow, MainWindowDesign.Ui_MainWindow):
     def __init__(self):
-        pg.setConfigOptions(imageAxisOrder='row-major')
+        #pg.setConfigOptions(imageAxisOrder='row-major')
         # Using super allows us to
         # access variables, methods etc in the MainWindowDesign.py file
         super(self.__class__, self).__init__()
@@ -824,7 +824,7 @@ class Application(QtGui.QMainWindow, MainWindowDesign.Ui_MainWindow):
         dane_imu = []
         for i in range(len(euler)):
             if j >= 11:
-                dane_imu.append([euler[i][1], euler[i][2]+2.1, -euler[i][0]])##tutaj zmieniaj żeby pasowało, zwłaszcza drugi
+                dane_imu.append([euler[i][1], euler[i][2]+3.14, -euler[i][0]])##tutaj zmieniaj żeby pasowało, zwłaszcza drugi
                                                                             #  element wektora, bo to jest yaw,
                                                                             #  dla 9 przejazdu około dodaj 2.1, dla 12 około 3.14
                 j = 0
@@ -1552,6 +1552,7 @@ class Application(QtGui.QMainWindow, MainWindowDesign.Ui_MainWindow):
 
 
 def main():
+    pg.setConfigOptions(imageAxisOrder='row-major')
     app = QtGui.QApplication(sys.argv)  # A new instance of QApplication
     form = Application()                # We set the form to be our Application (design)
     form.show()                         # Show the form
