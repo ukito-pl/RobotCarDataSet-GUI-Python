@@ -25,9 +25,9 @@ except AttributeError:
 class Ui_Dialog(object):
     def setupUi(self, Dialog):
         Dialog.setObjectName(_fromUtf8("Dialog"))
-        Dialog.resize(488, 274)
+        Dialog.resize(488, 216)
         self.buttonBox = QtGui.QDialogButtonBox(Dialog)
-        self.buttonBox.setGeometry(QtCore.QRect(270, 210, 181, 32))
+        self.buttonBox.setGeometry(QtCore.QRect(270, 160, 181, 32))
         self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
         self.buttonBox.setStandardButtons(QtGui.QDialogButtonBox.Cancel|QtGui.QDialogButtonBox.Ok)
         self.buttonBox.setObjectName(_fromUtf8("buttonBox"))
@@ -50,9 +50,9 @@ class Ui_Dialog(object):
         QtCore.QMetaObject.connectSlotsByName(Dialog)
 
     def retranslateUi(self, Dialog):
-        Dialog.setWindowTitle(_translate("Dialog", "Ustawienia wyświetlania", None))
+        Dialog.setWindowTitle(_translate("Dialog", "Ustawienia wizualizacji", None))
         self.checkBoxUW.setText(_translate("Dialog", "Początek układu współrzędnych", None))
-        self.label_12.setText(_translate("Dialog", "Wielkość punktow", None))
+        self.label_12.setText(_translate("Dialog", "Wielkość punktów", None))
         self.checkBoxColors.setText(_translate("Dialog", "Kolorowe punkty", None))
 
 

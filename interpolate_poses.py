@@ -17,7 +17,7 @@ import csv
 import numpy as np
 import numpy.matlib as ml
 from transform import *
-import pydevd
+#import pydevd
 
 def interpolate_poses_simple(path,requested_timestamps,origin_timestamp):
     with open(path) as ins_file:

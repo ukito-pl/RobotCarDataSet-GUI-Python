@@ -797,7 +797,7 @@ class Application(QtGui.QMainWindow, MainWindowDesign.Ui_MainWindow):
                     gyro = [0,0,0]
                 dane_akc.append(akc)
                 dane_gyro.append(gyro)
-            if start == True and int(id) != 1 and line.split(',')[6:9] != [] and line.split(',')[
+            if int(id) != 1 and line.split(',')[6:9] != [] and line.split(',')[
                                                                                  6:9] != ['', '', '']:
                 akc = [-(float(line.split(',')[3]))] + [-(float(line.split(',')[2]))] + [float(line.split(',')[4])]
                 gyro = [-(float(line.split(',')[7]))] + [-(float(line.split(',')[6]))] + [float(line.split(',')[8])]
@@ -814,16 +814,20 @@ class Application(QtGui.QMainWindow, MainWindowDesign.Ui_MainWindow):
         # Do wykreślenia kąta yaw na wykresie
         yaw = []
         for i in range(len(euler)):
-            yaw.append(euler[i][2] * 180 / pi)
+            yaw.append((euler[i][2]) * 180 / pi)
         pyplot.plot(range(len(yaw)), yaw)
         pyplot.grid()
         pyplot.show()
 
 
+        if len(dane_xyz) >= poses_times:
+            t = int(len(euler)/len(poses_times))
+        else:
+            t = int(len(euler)/len(dane_xyz))
         j = 0
         dane_imu = []
         for i in range(len(euler)):
-            if j >= 11:
+            if j >= t:
                 dane_imu.append([euler[i][1], euler[i][2], -euler[i][0]])
                 j = 0
             j = j + 1

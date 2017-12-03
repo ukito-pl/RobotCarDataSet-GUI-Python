@@ -77,8 +77,8 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(_translate("MainWindow", "Okno główne", None))
-        self.settingButton.setText(_translate("MainWindow", "Ustawienia widoku", None))
-        self.imageButton.setText(_translate("MainWindow", "Załaduj i wyswietl zdjęcia", None))
+        self.settingButton.setText(_translate("MainWindow", "Ustawienia wizualizacji", None))
+        self.imageButton.setText(_translate("MainWindow", "Załaduj i wyświetl zdjęcia", None))
         self.selectDataButton.setText(_translate("MainWindow", "Wybierz dane", None))
         self.pointcloudButton.setText(_translate("MainWindow", "Buduj i rysuj pointclouda", None))
         self.lidarDataButton.setText(_translate("MainWindow", "Wyświetl dane z lidaru", None))

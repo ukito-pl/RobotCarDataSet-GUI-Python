@@ -18,7 +18,7 @@
     <item row="0" column="1">
      <widget class="QPushButton" name="settingButton">
       <property name="text">
-       <string>Ustawienia widoku</string>
+       <string>Ustawienia wizualizacji</string>
       </property>
      </widget>
     </item>
@@ -28,7 +28,7 @@
     <item row="1" column="1">
      <widget class="QPushButton" name="imageButton">
       <property name="text">
-       <string>Załaduj i wyswietl zdjęcia</string>
+       <string>Załaduj i wyświetl zdjęcia</string>
       </property>
      </widget>
     </item>
