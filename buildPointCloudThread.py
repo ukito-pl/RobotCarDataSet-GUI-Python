@@ -25,6 +25,7 @@ class BuildPointcloudThread(QThread):
             pointcloud, reflectance = build_pointcloud_nasze(self.lidar_dir, self.poses_file_dir, self.extrinsics_dir,
                                                        self.start_time, self.end_time, self.origin_time, self.extr_pose,
                                                        self.pose_kind)
-        self.emit(SIGNAL('drawPointcloud(PyQt_PyObject)'), pointcloud)
+
+        self.emit(SIGNAL('drawPointcloud(PyQt_PyObject)'), [pointcloud,reflectance])
 
 

@@ -1368,10 +1368,27 @@ class Application(QtGui.QMainWindow, MainWindowDesign.Ui_MainWindow):
 #SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS
 #SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS
 #SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS
+    def add_colors(self,dane_reflectanse):
+
+        colors = []
+        maks_ref = max(dane_reflectanse)
+
+        for i in range(len(dane_reflectanse)):
+                d = dane_reflectanse[i]/ maks_ref
+                rgb = np.array(colorsys.hsv_to_rgb(d, 1.0, 1.0))
+                colors.append([rgb[0] * 255, rgb[1] * 255, rgb[2] * 255, 1])
+                # if (dane_reflectanse[i][j] / maks_ref) <= 0.35:
+                #     colors.append([0,1,0,1])
+                # elif (dane_reflectanse[i][j] / maks_ref) >=0.65 :
+                #     colors.append([1,0,0,1])
+                # else:
+                #     colors.append([0,0,1,1])
+        colors = np.array(colors)
+        return colors
 
     def tworz_pliki_z_lidaru(self):
-        global colors
-        # Tworzy plik z kolejnymi scanami z lidaru oraz plik timestampow odpowiadający kolejnym scanom
+
+        # Tworzy plik z kolejnymi scanadmi z lidaru oraz plik timestampow odpowiadający kolejnym scanom
 
 
         # konwersja czasu z lidaru na relatywny do pierwszego pomiaru
@@ -1429,22 +1446,16 @@ class Application(QtGui.QMainWindow, MainWindowDesign.Ui_MainWindow):
         f.close()
         print "Utworzono plik dane_odleglosci_lidar.csv"
 
-        colors = []
-        maks_ref = max(max(dane_reflectanse))
-        min_ref = min(min(dane_reflectanse))
-        for i in range(len(dane_reflectanse)):
-            for j in range(0, 271, 1):
-                d = dane_reflectanse[i][j] / maks_ref
-                rgb = np.array(colorsys.hsv_to_rgb(d, 1.0, 1.0))
+        f = open('dane_reflectance_lidar.csv', 'w')
+        f_csv = csv.writer(f)
+        dane_do_zapisania = []
+        for i in range(0, dane_lidar.__len__()):
+            dane_do_zapisania.append(dane_reflectanse[i])
+        f_csv.writerows(dane_do_zapisania)
+        f.close()
+        print "Utworzono plik dane_reflectance_lidar.csv"
+        #self.add_colors(dane_reflectanse)
 
-                colors.append([rgb[0]*255,rgb[1]*255,rgb[2]*255,1])
-                # if (dane_reflectanse[i][j] / maks_ref) <= 0.35:
-                #     colors.append([0,1,0,1])
-                # elif (dane_reflectanse[i][j] / maks_ref) >=0.65 :
-                #     colors.append([1,0,0,1])
-                # else:
-                #     colors.append([0,0,1,1])
-        colors = np.array(colors)
 
     def view_images(self):
         if sdk:
@@ -1541,7 +1552,11 @@ class Application(QtGui.QMainWindow, MainWindowDesign.Ui_MainWindow):
 
 
     def draw_pointcloud(self, pointcloud):
-        self.pointcloud = pointcloud
+        dane_ref = pointcloud[1]
+        colors = self.add_colors(dane_ref)
+        self.pointcloud = pointcloud[0]
+        pointcloud = pointcloud[0]
+
         if sdk:
             #odwróć pointclouda, żeby dobrze było oglądać
             pointcloud = np.dot(build_se3_transform(np.array([0,0,0,3.14,0,0])), pointcloud)

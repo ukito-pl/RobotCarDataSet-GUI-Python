@@ -20,7 +20,7 @@ import csv
 from transform import *
 
 from interpolate_poses import *
-#import pydevd
+import pydevd
 
 
 def build_pointcloud(lidar_dir, poses_file, extrinsics_dir, start_time, end_time, origin_time=-1):
@@ -147,10 +147,18 @@ def build_pointcloud_nasze(lidar_dir, poses_file, extrinsics_dir, start_time, en
 
     pointcloud = np.array([[0], [0], [0],[0]])
     reflectance = np.empty((0))
+    ref = []
+    reflectance_data_file = open('dane_reflectance_lidar.csv', 'r')
     i = 0
+    for line in reflectance_data_file:
+        ref.append([float(x) for x in line.split(',')[0:]])
+
+    i = 0
+    k = 0
     lidar_data_file = open('dane_odleglosci_lidar.csv', 'r')
     for line in lidar_data_file:
-        #pydevd.settrace()
+
+
         timestamp = line.split(',')[0]
         if start_time <= int(timestamp) <= end_time:
             if i < poses.__len__():
@@ -167,7 +175,8 @@ def build_pointcloud_nasze(lidar_dir, poses_file, extrinsics_dir, start_time, en
                 scan = dane_pointcloud.transpose()
 
 
-                reflectance = np.concatenate((reflectance, np.ravel(scan[2, :])))
+                refik = np.array(ref[k])
+                reflectance = np.concatenate((reflectance, refik))
                 scan[2, :] = np.zeros((1, scan.shape[1]))
 
 
@@ -176,7 +185,7 @@ def build_pointcloud_nasze(lidar_dir, poses_file, extrinsics_dir, start_time, en
                 pointcloud = np.hstack([pointcloud, scan])
 
                 i = i + 1
-
+        k = k+1
     #transform pointcloud from pose coordinate system to car coordinate system
     pointcloud = np.dot(pointcloud.transpose(), np.linalg.inv(pose_extr))
     pointcloud = pointcloud.transpose()
