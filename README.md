@@ -5,9 +5,9 @@ Program służy do interpretacji i wizualizacji danych z projektu Oxford RobotCa
 
 Wymagania
 ------------
-###Interpreter języka Python 2.7.
+### Interpreter języka Python 2.7.
 Większość dystrybcuji Linuxa posiada domyślnie zainstalowany interpreter Pythona. W przypadku gdy takiego nie posiada należy kierować się instrukcjami zawartymi na oficjalnej stronie (https://docs.python.org/2/using/unix.html#on-linux).
-###Pakiety:
+### Pakiety
 Program do prawidłowego działania wymaga następujących pakietów Pythona:
 * numpy
 * matplotlib
@@ -24,7 +24,7 @@ Do instalacji wspomnianych pakietów wykorzystuje się polecenie:
 pip install numpy matplotlib pillow colour_demosaicing
 ```
 
-###PyQT4 i pyqtgraph
+### PyQT4 i pyqtgraph
 Aby zainstalwoać bibliotekę pyqtgraph należy wpisać w terminalu:
 ```
 sudo apt-get install python-pyqtgraph
