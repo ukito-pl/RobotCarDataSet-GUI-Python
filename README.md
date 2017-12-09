@@ -1,66 +1,47 @@
-Robotcar Dataset Python Tools
+Instrukcja
 =============================
 
-This directory contains sample python code for viewing and manipulating data.
+Program służy do interpretacji i wizualizacji danych z projektu Oxford RobotCar Dataset (http://robotcar-dataset.robots.ox.ac.uk/) oraz danych własnych. Przeznaczony jest na systemy operacyjne Linux i napisany jest w języku Python 2.7. Program testowano na dystrybucji Ubuntu 16.04 LTS.
 
-Requirements
+Wymagania
 ------------
-The python tools have been tested on Python 2.7. 
-Python 3.* compatibility has not been verified.
-
-The following packages are required:
+###Interpreter języka Python 2.7.
+Większość dystrybcuji Linuxa posiada domyślnie zainstalowany interpreter Pythona. W przypadku gdy takiego nie posiada należy kierować się instrukcjami zawartymi na oficjalnej stronie (https://docs.python.org/2/using/unix.html#on-linux).
+###Pakiety:
+Program do prawidłowego działania wymaga następujących pakietów Pythona:
 * numpy
 * matplotlib
 * pillow
 * colour_demosaicing
 
-These can be installed with pip:
+Mogą być one zainstalowane poprzez program PIP. Jego instalacji dokonuje się wpisując w terminalu:
 
 ```
-pip install numpy matplotlib colour_demosaicing pillow
+sudo apt-get install python-pip
+```
+Do instalacji wspomnianych pakietów wykorzystuje się polecenie:
+```
+pip install numpy matplotlib pillow colour_demosaicing
 ```
 
-
-Command Line Tools
+###PyQT4 i pyqtgraph
+Aby zainstalwoać bibliotekę pyqtgraph należy wpisać w terminalu:
+```
+sudo apt-get install python-pyqtgraph
+```
+Automatycznie powinna również zostać zainstalowana biblioteka PyQt4. Gdyby tak się nie stało należy ją zainstalować:
+```
+sudo apt-get install python-qt4
+```
+Uruchomienie programu
 ------------------
 
-### Viewing Images
-The `play_images.py` script can be used to view images from the dataset.
-
-```bash
-python play_images.py --images_dir /path/to/data/yyyy-mm-dd-hh-mm-ss/stereo/centre
+Aby uruchomić program należy sciągnąć wszystkie pliki zawarte w rezpozytorium i rozpakować je w dowolnym folderze. Następnie należy przejść do tego folderu za pomocą terminala i komendy 'cd' oraz wpisać:
+ ```
+python main.py
 ```
 
-If you wish to undistort the images before viewing them, pass the camera model directory as a second argument:
+Uwagi
+------------------
+W obecnej wersji wszystkie ścieżki podawane w programie nie powinny zawierać polskich znaków ani znaków specjalnych(w tym spacje)
 
-```bash
-python play_images.py --images_dir /path/to/data/yyyy-mm-dd-hh-mm-ss/stereo/centre --models_dir /path/to/camera/models
-```
-
-### Building Pointclouds
-The `build_pointcloud.py` script builds and displays a 3D pointcloud by combining multiple LIDAR scans with a pose source.
-The pose source can be either INS data or the supplied visual odometry data. For example:
-
-```bash
-python build_pointcloud.py --laser_dir /path/to/data/yyyy-mm-dd-hh-mm-ss/lms_front --extrinsics_dir ../extrinsics --poses_file /path/to/data/yyyy-mm-dd-hh-mm-ss/vo/vo.csv'
-```
-
-### Projecting pointclouds into images
-The `project_laser_into_camera.py` script first builds a pointcloud, then projects it into a camera image using a pinhole camera model.
-For example:
-
-```bash
-python project_laser_into_camera.py --image_dir /path/to/data/yyyy-mm-dd-hh-mm-ss/stereo/centre --laser_dir /path/to/data/yyyy-mm-dd-hh-mm-ss/ldmrs --poses_file /path/to/data/yyyy-mm-dd-hh-mm-ss/vo/vo.csv --models_dir /path/to/models --extrinsics_dir ../extrinsics --image_idx 200
-```
-
-Usage from Python
------------------
-The scripts here are also designed to be used in your own scripts.
-
-* `build_pointcloud.py`: function for building a pointcloud from LIDAR and odometry data
-* `camera_model.py`: loads camera models from disk, and provides undistortion of images and projection of pointclouds
-* `interpolate_poses.py`: functions for interpolating VO or INS data to obtain pose estimates at arbitrary timestamps
-* `transform.py`: functions for converting between various transform representations
-* `image.py`: function for loading, Bayer demosaicing and undistorting images
-
-For examples of how to use these functions, see the command line tools above.

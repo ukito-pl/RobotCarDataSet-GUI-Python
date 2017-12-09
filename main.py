@@ -310,13 +310,15 @@ class SelectDataWindow(QtGui.QDialog, SelectDataWindowDesign.Ui_Dialog):
     def count_time(self):
         global real_end_time, real_start_time, real_img_start_time, real_img_end_time
         path = dir_lidar + '.timestamps'
+        #path = dir_ins
         f = open(path, 'r')
         x = f.readline()
+        #x = f.readline()
         real_start_time = int(x.split()[0]) + int(start_time) * 1000
         real_img_start_time = real_start_time + int(img_start_time) * 1000
         f.close()
-        real_end_time = int(real_start_time) + int(end_time) * 1000
-        real_img_end_time = int(real_img_start_time) + int(img_end_time) * 1000
+        real_end_time = int(real_start_time) + (int(end_time) - int(start_time)) * 1000
+        real_img_end_time = int(real_img_start_time) + (int(img_end_time)- int(img_start_time)) * 1000
 
     # Czytanie i wypisywanie danych z pliku "defaultDir.txt" do tzw. "formularzy"
     def read_dialog1(self):

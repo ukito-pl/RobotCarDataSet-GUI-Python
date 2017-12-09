@@ -107,9 +107,7 @@ def build_pointcloud(lidar_dir, poses_file, extrinsics_dir, start_time, end_time
         scan = np.dot(np.dot(poses[i], G_posesource_laser), np.vstack([scan, np.ones((1, scan.shape[1]))]))
         pointcloud = np.hstack([pointcloud, scan])
 
-    # transform pointcloud from pose coordinate system to car coordinate system
-    # pointcloud = np.dot(pointcloud.transpose(), np.linalg.inv(pose_extr))
-    # pointcloud = pointcloud.transpose()
+
     pointcloud = pointcloud[:, 1:]
     if pointcloud.shape[1] == 0:
         raise IOError("Could not find scan files for given time range in directory " + lidar_dir)

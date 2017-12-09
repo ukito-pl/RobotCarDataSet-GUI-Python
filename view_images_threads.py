@@ -49,7 +49,7 @@ class ViewImagesThreadSDK(QThread):
                 with open(os.path.join(self.dir_extr, 'ins.txt')) as extrinsics_file:
                     extrinsics = next(extrinsics_file)
                     G_camera_posesource = G_camera_vehicle * build_se3_transform([float(x) for x in extrinsics.split(' ')])
-                poses = interpolate_ins_poses(self.dir_poses, timestamps, timestamps[0], 2)
+                poses = interpolate_ins_poses(self.dir_poses, timestamps, timestamps[0], 5)
             else:
                 # VO frame and vehicle frame are the same
                 G_camera_posesource = G_camera_vehicle

@@ -86,7 +86,8 @@ def interpolate_vo_poses(vo_path, pose_timestamps, origin_timestamp):
 
         lower_timestamp = min(min(pose_timestamps), origin_timestamp)
         upper_timestamp = max(max(pose_timestamps), origin_timestamp)
-
+        print lower_timestamp
+        print upper_timestamp
         for row in vo_reader:
             timestamp = int(row[0])
             if timestamp < lower_timestamp:
